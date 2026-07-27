@@ -1,0 +1,16 @@
+[project]
+name = "mono2micro"
+version = "0.1.0"
+description = "AI-driven monolith-to-microservice migration assistant"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+testpaths = ["tests", "generated/tests"]
+python_files = ["test_*.py"]
+addopts = "-q"
+markers = [
+    "integration: end-to-end tests that boot the strangler topology in-process",
+]
+
+[tool.setuptools]
+py-modules = []

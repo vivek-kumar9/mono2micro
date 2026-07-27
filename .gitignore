@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtualenv
+.venv/
+venv/
+
+# Env / secrets
+.env
+
+# OS
+.DS_Store
+
+# Generated pipeline artifacts are intentionally tracked (portfolio value),
+# except transient traces/caches:
+generated/llm_trace.jsonl
+
+# Portfolio tracking (local only — never publish)
+Portfolio_Tracking/
