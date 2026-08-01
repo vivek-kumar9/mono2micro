@@ -1,0 +1,52 @@
+{
+  "description": "Gold-standard bounded-context labelling of the synthetic e-commerce monolith. Each source module is mapped to the microservice/domain it *should* belong to after decomposition. This is the reference partition the proposed decomposition is scored against (ARI, F1, etc.).",
+  "domain": "e-commerce order management",
+  "extraction_target": "Orders",
+  "realism_notes": "Several modules use domain-neutral filenames (discovery=Catalog browse, rating=pricing, basket=cart) so the decomposition must infer context from behaviour, not filenames. `logistics` deliberately straddles two contexts: it belongs to the Orders lifecycle (its gold label) but manipulates warehouse stock, so a content classifier reasonably mis-files it under Inventory. These are honest sources of imperfect scores; ground-truth labels were NOT adjusted to inflate metrics.",
+  "services": {
+    "Platform": {
+      "kind": "shared-kernel",
+      "description": "Cross-cutting configuration, persistence and shared entities. In a real migration this becomes a shared library or is duplicated per service, not a runtime microservice."
+    },
+    "Users/Auth": {
+      "kind": "microservice",
+      "description": "Identity: registration, login/session issuance and user profiles."
+    },
+    "Catalog": {
+      "kind": "microservice",
+      "description": "Product catalogue browsing and price computation."
+    },
+    "Inventory": {
+      "kind": "microservice",
+      "description": "Stock levels and reservations."
+    },
+    "Orders": {
+      "kind": "microservice",
+      "description": "Cart and checkout orchestration — the first service extracted via strangler fig."
+    },
+    "Payments": {
+      "kind": "microservice",
+      "description": "Charge capture and payment records."
+    },
+    "Notifications": {
+      "kind": "microservice",
+      "description": "Transactional email/SMS dispatch."
+    }
+  },
+  "assignments": {
+    "config": "Platform",
+    "db": "Platform",
+    "models": "Platform",
+    "app": "Platform",
+    "auth": "Users/Auth",
+    "users": "Users/Auth",
+    "discovery": "Catalog",
+    "rating": "Catalog",
+    "inventory": "Inventory",
+    "basket": "Orders",
+    "orders": "Orders",
+    "logistics": "Orders",
+    "payments": "Payments",
+    "notifications": "Notifications"
+  }
+}
