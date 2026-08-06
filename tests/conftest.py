@@ -1,5 +1,5 @@
 """Shared pytest fixtures. Ensures the project root is importable and provides
-cached analysis artifacts for the tooling tests."""
+cached analysis / decomposition artifacts for the tooling tests."""
 from __future__ import annotations
 
 import json
@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from agents.decomposition import DecompositionEngine  # noqa: E402
 from agents.llm_client import LLMClient, LLMConfig  # noqa: E402
 from agents.repo_analyzer import RepoAnalyzer  # noqa: E402
 
@@ -24,6 +25,11 @@ def llm() -> LLMClient:
 @pytest.fixture(scope="session")
 def analysis(llm):
     return RepoAnalyzer(ROOT / "monolith", "monolith", llm).analyze()
+
+
+@pytest.fixture(scope="session")
+def decomposition(analysis, llm):
+    return DecompositionEngine(analysis, llm).run()
 
 
 @pytest.fixture(scope="session")
