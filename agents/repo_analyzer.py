@@ -47,7 +47,10 @@ class RepoAnalyzer:
             self._enrich(pack)
         digraph = build_digraph(packs)
         analysis = RepoAnalysis(
-            root=str(self.root),
+            # Repo-relative, matching ContextPack.path ("monolith/orders.py").
+            # An absolute path would leak the local directory layout and make
+            # generated/analysis.json irreproducible on any other machine.
+            root=self.root.name,
             packs=packs,
             graph=graph_artifact(digraph),
             llm_mode=self.llm.mode,
