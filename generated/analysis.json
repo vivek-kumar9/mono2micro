@@ -1,0 +1,2296 @@
+{
+  "root": "monolith",
+  "packs": [
+    {
+      "module": "app",
+      "path": "monolith/app.py",
+      "loc": 62,
+      "url_prefix": null,
+      "imports_internal": [
+        {
+          "target": "auth",
+          "kind": "attr",
+          "weight": 2
+        },
+        {
+          "target": "basket",
+          "kind": "attr",
+          "weight": 2
+        },
+        {
+          "target": "config",
+          "kind": "call",
+          "weight": 2
+        },
+        {
+          "target": "db",
+          "kind": "attr",
+          "weight": 3
+        },
+        {
+          "target": "discovery",
+          "kind": "attr",
+          "weight": 2
+        },
+        {
+          "target": "inventory",
+          "kind": "attr",
+          "weight": 2
+        },
+        {
+          "target": "logistics",
+          "kind": "attr",
+          "weight": 2
+        },
+        {
+          "target": "notifications",
+          "kind": "attr",
+          "weight": 2
+        },
+        {
+          "target": "orders",
+          "kind": "attr",
+          "weight": 2
+        },
+        {
+          "target": "payments",
+          "kind": "attr",
+          "weight": 2
+        },
+        {
+          "target": "rating",
+          "kind": "attr",
+          "weight": 2
+        },
+        {
+          "target": "users",
+          "kind": "attr",
+          "weight": 2
+        }
+      ],
+      "imports_external": [
+        "__future__",
+        "flask"
+      ],
+      "functions": [
+        {
+          "name": "create_app",
+          "args": [],
+          "calls": [
+            "Flask",
+            "get",
+            "jsonify",
+            "len",
+            "register_blueprint",
+            "seed",
+            "snapshot"
+          ],
+          "is_public": true
+        }
+      ],
+      "classes": [],
+      "routes": [
+        {
+          "method": "GET",
+          "path": "/health",
+          "handler": "health"
+        },
+        {
+          "method": "GET",
+          "path": "/",
+          "handler": "index"
+        }
+      ],
+      "entities": [],
+      "keywords": [
+        "platform",
+        "application",
+        "factory",
+        "composition",
+        "root",
+        "registers",
+        "every",
+        "bounded",
+        "context",
+        "dependency",
+        "graph",
+        "module",
+        "fan",
+        "out",
+        "hub",
+        "imports",
+        "all",
+        "others",
+        "create",
+        "health"
+      ],
+      "public_interface": [
+        "create_app"
+      ],
+      "responsibility": "The `app` module belongs to the Platform context: it exposes 2 HTTP route(s); collaborates with auth, basket, config, db.",
+      "suggested_domain": "Platform"
+    },
+    {
+      "module": "auth",
+      "path": "monolith/auth.py",
+      "loc": 47,
+      "url_prefix": "/auth",
+      "imports_internal": [
+        {
+          "target": "config",
+          "kind": "call",
+          "weight": 2
+        },
+        {
+          "target": "db",
+          "kind": "attr",
+          "weight": 2
+        },
+        {
+          "target": "users",
+          "kind": "attr",
+          "weight": 2
+        }
+      ],
+      "imports_external": [
+        "__future__",
+        "flask",
+        "hashlib",
+        "secrets"
+      ],
+      "functions": [
+        {
+          "name": "hash_password",
+          "args": [
+            "raw"
+          ],
+          "calls": [
+            "encode",
+            "hexdigest",
+            "sha256"
+          ],
+          "is_public": true
+        },
+        {
+          "name": "issue_session",
+          "args": [
+            "user_id"
+          ],
+          "calls": [
+            "token_hex"
+          ],
+          "is_public": true
+        },
+        {
+          "name": "register",
+          "args": [],
+          "calls": [
+            "create_user",
+            "get",
+            "get_json",
+            "hash_password",
+            "jsonify",
+            "post"
+          ],
+          "is_public": true
+        },
+        {
+          "name": "login",
+          "args": [],
+          "calls": [
+            "get_json",
+            "hash_password",
+            "issue_session",
+            "jsonify",
+            "post",
+            "values"
+          ],
+          "is_public": true
+        }
+      ],
+      "classes": [],
+      "routes": [
+        {
+          "method": "POST",
+          "path": "/auth/register",
+          "handler": "register"
+        },
+        {
+          "method": "POST",
+          "path": "/auth/login",
+          "handler": "login"
+        }
+      ],
+      "entities": [],
+      "keywords": [
+        "auth",
+        "users",
+        "authentication",
+        "session",
+        "issuance",
+        "hash",
+        "password",
+        "issue",
+        "register",
+        "login"
+      ],
+      "public_interface": [
+        "hash_password",
+        "issue_session",
+        "login",
+        "register"
+      ],
+      "responsibility": "The `auth` module belongs to the Users/Auth context: it exposes 2 HTTP route(s); collaborates with config, db, users.",
+      "suggested_domain": "Users/Auth"
+    },
+    {
+      "module": "basket",
+      "path": "monolith/basket.py",
+      "loc": 58,
+      "url_prefix": "/cart",
+      "imports_internal": [
+        {
+          "target": "db",
+          "kind": "attr",
+          "weight": 6
+        },
+        {
+          "target": "discovery",
+          "kind": "attr",
+          "weight": 2
+        },
+        {
+          "target": "models",
+          "kind": "call",
+          "weight": 8
+        },
+        {
+          "target": "rating",
+          "kind": "attr",
+          "weight": 2
+        }
+      ],
+      "imports_external": [
+        "__future__",
+        "flask"
+      ],
+      "functions": [
+        {
+          "name": "get_cart",
+          "args": [
+            "user_id"
+          ],
+          "calls": [
+            "Cart",
+            "get"
+          ],
+          "is_public": true
+        },
+        {
+          "name": "add_item",
+          "args": [
+            "user_id",
+            "product_id",
+            "quantity"
+          ],
+          "calls": [
+            "CartItem",
+            "KeyError",
+            "append",
+            "get",
+            "get_cart"
+          ],
+          "is_public": true
+        },
+        {
+          "name": "cart_total",
+          "args": [
+            "cart"
+          ],
+          "calls": [
+            "effective_price",
+            "get",
+            "round"
+          ],
+          "is_public": true
+        },
+        {
+          "name": "view_cart",
+          "args": [
+            "user_id"
+          ],
+          "calls": [
+            "cart_total",
+            "get",
+            "get_cart",
+            "jsonify",
+            "to_dict"
+          ],
+          "is_public": true
+        },
+        {
+          "name": "add_to_cart",
+          "args": [
+            "user_id"
+          ],
+          "calls": [
+            "add_item",
+            "enrich",
+            "get_json",
+            "jsonify",
+            "post",
+            "to_dict"
+          ],
+          "is_public": true
+        }
+      ],
+      "classes": [],
+      "routes": [
+        {
+          "method": "GET",
+          "path": "/cart/<int:user_id>",
+          "handler": "view_cart"
+        },
+        {
+          "method": "POST",
+          "path": "/cart/<int:user_id>/items",
+          "handler": "add_to_cart"
+        }
+      ],
+      "entities": [],
+      "keywords": [
+        "basket",
+        "orders",
+        "shopping",
+        "cart",
+        "pre",
+        "checkout",
+        "state",
+        "domain",
+        "neutral",
+        "module",
+        "name",
+        "purpose",
+        "word",
+        "only",
+        "appears",
+        "behaviour",
+        "not",
+        "filename",
+        "add",
+        "total",
+        "view",
+        "user"
+      ],
+      "public_interface": [
+        "add_item",
+        "add_to_cart",
+        "cart_total",
+        "get_cart",
+        "view_cart"
+      ],
+      "responsibility": "The `basket` module belongs to the Orders context: it exposes 2 HTTP route(s); collaborates with db, discovery, models, rating.",
+      "suggested_domain": "Orders"
+    },
+    {
+      "module": "config",
+      "path": "monolith/config.py",
+      "loc": 22,
+      "url_prefix": null,
+      "imports_internal": [],
+      "imports_external": [
+        "__future__",
+        "dataclasses",
+        "os"
+      ],
+      "functions": [],
+      "classes": [
+        {
+          "name": "Config",
+          "bases": [],
+          "methods": []
+        }
+      ],
+      "routes": [],
+      "entities": [
+        {
+          "name": "Config",
+          "fields": [
+            "env",
+            "currency",
+            "tax_rate",
+            "free_shipping_threshold",
+            "payment_provider",
+            "notification_channels",
+            "session_ttl_seconds"
+          ],
+          "annotations": {
+            "env": "str",
+            "currency": "str",
+            "tax_rate": "float",
+            "free_shipping_threshold": "float",
+            "payment_provider": "str",
+            "notification_channels": "list[str]",
+            "session_ttl_seconds": "int"
+          }
+        }
+      ],
+      "keywords": [
+        "config",
+        "platform",
+        "application",
+        "configuration",
+        "shared",
+        "kernel",
+        "env",
+        "currency",
+        "tax",
+        "rate",
+        "free",
+        "shipping",
+        "threshold",
+        "payment",
+        "provider",
+        "notification",
+        "channels",
+        "session",
+        "ttl",
+        "seconds"
+      ],
+      "public_interface": [
+        "Config"
+      ],
+      "responsibility": "The `config` module belongs to the Platform context: it owns the Config entity/entities.",
+      "suggested_domain": "Platform"
+    },
+    {
+      "module": "db",
+      "path": "monolith/db.py",
+      "loc": 113,
+      "url_prefix": null,
+      "imports_internal": [
+        {
+          "target": "models",
+          "kind": "call",
+          "weight": 16
+        }
+      ],
+      "imports_external": [
+        "__future__",
+        "itertools",
+        "typing"
+      ],
+      "functions": [
+        {
+          "name": "next_user_id",
+          "args": [],
+          "calls": [
+            "next"
+          ],
+          "is_public": true
+        },
+        {
+          "name": "next_order_id",
+          "args": [],
+          "calls": [
+            "next"
+          ],
+          "is_public": true
+        },
+        {
+          "name": "next_payment_id",
+          "args": [],
+          "calls": [
+            "next"
+          ],
+          "is_public": true
+        },
+        {
+          "name": "next_notification_id",
+          "args": [],
+          "calls": [
+            "next"
+          ],
+          "is_public": true
+        },
+        {
+          "name": "seed",
+          "args": [],
+          "calls": [
+            "InventoryItem",
+            "PriceRule",
+            "Product",
+            "User",
+            "next_user_id"
+          ],
+          "is_public": true
+        },
+        {
+          "name": "reset",
+          "args": [],
+          "calls": [
+            "clear",
+            "count"
+          ],
+          "is_public": true
+        },
+        {
+          "name": "snapshot",
+          "args": [],
+          "calls": [
+            "len"
+          ],
+          "is_public": true
+        }
+      ],
+      "classes": [],
+      "routes": [],
+      "entities": [
+        {
+          "name": "TABLES",
+          "fields": [
+            "users",
+            "products",
+            "price_rules",
+            "inventory",
+            "carts",
+            "orders",
+            "payments",
+            "notifications"
+          ],
+          "annotations": {}
+        }
+      ],
+      "keywords": [
+        "platform",
+        "memory",
+        "database",
+        "seed",
+        "shared",
+        "kernel",
+        "uses",
+        "plain",
+        "dicts",
+        "tables",
+        "monolith",
+        "runs",
+        "single",
+        "dependency",
+        "while",
+        "still",
+        "declaring",
+        "persistent",
+        "entities",
+        "repo",
+        "analyzer",
+        "treats",
+        "signal",
+        "next",
+        "user",
+        "order",
+        "payment",
+        "notification",
+        "reset",
+        "snapshot",
+        "users",
+        "products",
+        "price",
+        "rules",
+        "inventory",
+        "carts",
+        "orders",
+        "payments",
+        "notifications"
+      ],
+      "public_interface": [
+        "next_notification_id",
+        "next_order_id",
+        "next_payment_id",
+        "next_user_id",
+        "reset",
+        "seed",
+        "snapshot"
+      ],
+      "responsibility": "The `db` module belongs to the Platform context: it owns the TABLES entity/entities; collaborates with models.",
+      "suggested_domain": "Platform"
+    },
+    {
+      "module": "discovery",
+      "path": "monolith/discovery.py",
+      "loc": 34,
+      "url_prefix": "/catalog",
+      "imports_internal": [
+        {
+          "target": "db",
+          "kind": "attr",
+          "weight": 3
+        },
+        {
+          "target": "inventory",
+          "kind": "attr",
+          "weight": 2
+        },
+        {
+          "target": "models",
+          "kind": "call",
+          "weight": 3
+        },
+        {
+          "target": "rating",
+          "kind": "attr",
+          "weight": 2
+        }
+      ],
+      "imports_external": [
+        "__future__",
+        "flask"
+      ],
+      "functions": [
+        {
+          "name": "enrich",
+          "args": [
+            "product"
+          ],
+          "calls": [
+            "available",
+            "effective_price",
+            "to_dict"
+          ],
+          "is_public": true
+        },
+        {
+          "name": "list_products",
+          "args": [],
+          "calls": [
+            "enrich",
+            "get",
+            "jsonify",
+            "values"
+          ],
+          "is_public": true
+        },
+        {
+          "name": "get_product",
+          "args": [
+            "product_id"
+          ],
+          "calls": [
+            "enrich",
+            "get",
+            "jsonify"
+          ],
+          "is_public": true
+        }
+      ],
+      "classes": [],
+      "routes": [
+        {
+          "method": "GET",
+          "path": "/catalog/products",
+          "handler": "list_products"
+        },
+        {
+          "method": "GET",
+          "path": "/catalog/products/<int:product_id>",
+          "handler": "get_product"
+        }
+      ],
+      "entities": [],
+      "keywords": [
+        "discovery",
+        "product",
+        "browse",
+        "catalogue",
+        "live",
+        "stock",
+        "effective",
+        "price",
+        "domain",
+        "neutral",
+        "module",
+        "name",
+        "purpose",
+        "decomposition",
+        "must",
+        "infer",
+        "context",
+        "its",
+        "behaviour",
+        "not",
+        "give",
+        "away",
+        "filename",
+        "enrich",
+        "products",
+        "catalog"
+      ],
+      "public_interface": [
+        "enrich",
+        "get_product",
+        "list_products"
+      ],
+      "responsibility": "The `discovery` module belongs to the Catalog context: it exposes 2 HTTP route(s); collaborates with db, inventory, models, rating.",
+      "suggested_domain": "Catalog"
+    },
+    {
+      "module": "inventory",
+      "path": "monolith/inventory.py",
+      "loc": 41,
+      "url_prefix": "/inventory",
+      "imports_internal": [
+        {
+          "target": "db",
+          "kind": "attr",
+          "weight": 4
+        },
+        {
+          "target": "models",
+          "kind": "call",
+          "weight": 2
+        }
+      ],
+      "imports_external": [
+        "__future__",
+        "flask"
+      ],
+      "functions": [
+        {
+          "name": "available",
+          "args": [
+            "product_id"
+          ],
+          "calls": [
+            "get",
+            "max"
+          ],
+          "is_public": true
+        },
+        {
+          "name": "reserve",
+          "args": [
+            "product_id",
+            "quantity"
+          ],
+          "calls": [
+            "available",
+            "get"
+          ],
+          "is_public": true
+        },
+        {
+          "name": "stock",
+          "args": [
+            "product_id"
+          ],
+          "calls": [
+            "available",
+            "get",
+            "jsonify"
+          ],
+          "is_public": true
+        },
+        {
+          "name": "reserve_route",
+          "args": [],
+          "calls": [
+            "get_json",
+            "jsonify",
+            "post",
+            "reserve"
+          ],
+          "is_public": true
+        }
+      ],
+      "classes": [],
+      "routes": [
+        {
+          "method": "GET",
+          "path": "/inventory/<int:product_id>",
+          "handler": "stock"
+        },
+        {
+          "method": "POST",
+          "path": "/inventory/reserve",
+          "handler": "reserve_route"
+        }
+      ],
+      "entities": [],
+      "keywords": [
+        "inventory",
+        "stock",
+        "levels",
+        "reservations",
+        "available",
+        "reserve",
+        "route",
+        "product"
+      ],
+      "public_interface": [
+        "available",
+        "reserve",
+        "reserve_route",
+        "stock"
+      ],
+      "responsibility": "The `inventory` module belongs to the Inventory context: it exposes 2 HTTP route(s); collaborates with db, models.",
+      "suggested_domain": "Inventory"
+    },
+    {
+      "module": "logistics",
+      "path": "monolith/logistics.py",
+      "loc": 49,
+      "url_prefix": "/logistics",
+      "imports_internal": [
+        {
+          "target": "db",
+          "kind": "attr",
+          "weight": 4
+        },
+        {
+          "target": "inventory",
+          "kind": "attr",
+          "weight": 3
+        }
+      ],
+      "imports_external": [
+        "__future__",
+        "flask"
+      ],
+      "functions": [
+        {
+          "name": "reserve_stock",
+          "args": [
+            "ref"
+          ],
+          "calls": [
+            "available",
+            "get",
+            "reserve"
+          ],
+          "is_public": true
+        },
+        {
+          "name": "release_stock",
+          "args": [
+            "product_id",
+            "quantity"
+          ],
+          "calls": [
+            "get",
+            "max"
+          ],
+          "is_public": true
+        },
+        {
+          "name": "pick_and_pack",
+          "args": [
+            "ref"
+          ],
+          "calls": [
+            "reserve_stock"
+          ],
+          "is_public": true
+        },
+        {
+          "name": "ship",
+          "args": [
+            "ref"
+          ],
+          "calls": [
+            "get",
+            "jsonify",
+            "pick_and_pack",
+            "post"
+          ],
+          "is_public": true
+        },
+        {
+          "name": "shipment_status",
+          "args": [
+            "ref"
+          ],
+          "calls": [
+            "get",
+            "jsonify"
+          ],
+          "is_public": true
+        }
+      ],
+      "classes": [],
+      "routes": [
+        {
+          "method": "POST",
+          "path": "/logistics/<int:ref>/ship",
+          "handler": "ship"
+        },
+        {
+          "method": "GET",
+          "path": "/logistics/<int:ref>",
+          "handler": "shipment_status"
+        }
+      ],
+      "entities": [],
+      "keywords": [
+        "logistics",
+        "warehouse",
+        "reserve",
+        "release",
+        "stock",
+        "pick",
+        "pack",
+        "record",
+        "shipments",
+        "ship",
+        "shipment",
+        "status",
+        "ref"
+      ],
+      "public_interface": [
+        "pick_and_pack",
+        "release_stock",
+        "reserve_stock",
+        "ship",
+        "shipment_status"
+      ],
+      "responsibility": "The `logistics` module belongs to the Inventory context: it exposes 2 HTTP route(s); collaborates with db, inventory.",
+      "suggested_domain": "Inventory"
+    },
+    {
+      "module": "models",
+      "path": "monolith/models.py",
+      "loc": 97,
+      "url_prefix": null,
+      "imports_internal": [],
+      "imports_external": [
+        "__future__",
+        "dataclasses",
+        "typing"
+      ],
+      "functions": [
+        {
+          "name": "to_dict",
+          "args": [
+            "entity"
+          ],
+          "calls": [
+            "asdict"
+          ],
+          "is_public": true
+        }
+      ],
+      "classes": [
+        {
+          "name": "User",
+          "bases": [],
+          "methods": []
+        },
+        {
+          "name": "Product",
+          "bases": [],
+          "methods": []
+        },
+        {
+          "name": "PriceRule",
+          "bases": [],
+          "methods": []
+        },
+        {
+          "name": "InventoryItem",
+          "bases": [],
+          "methods": []
+        },
+        {
+          "name": "CartItem",
+          "bases": [],
+          "methods": []
+        },
+        {
+          "name": "Cart",
+          "bases": [],
+          "methods": []
+        },
+        {
+          "name": "OrderLine",
+          "bases": [],
+          "methods": []
+        },
+        {
+          "name": "Order",
+          "bases": [],
+          "methods": []
+        },
+        {
+          "name": "Payment",
+          "bases": [],
+          "methods": []
+        },
+        {
+          "name": "Notification",
+          "bases": [],
+          "methods": []
+        }
+      ],
+      "routes": [],
+      "entities": [
+        {
+          "name": "User",
+          "fields": [
+            "id",
+            "email",
+            "name",
+            "password_hash",
+            "address"
+          ],
+          "annotations": {
+            "id": "int",
+            "email": "str",
+            "name": "str",
+            "password_hash": "str",
+            "address": "str"
+          }
+        },
+        {
+          "name": "Product",
+          "fields": [
+            "id",
+            "sku",
+            "name",
+            "category",
+            "base_price"
+          ],
+          "annotations": {
+            "id": "int",
+            "sku": "str",
+            "name": "str",
+            "category": "str",
+            "base_price": "float"
+          }
+        },
+        {
+          "name": "PriceRule",
+          "fields": [
+            "product_id",
+            "discount_pct",
+            "reason"
+          ],
+          "annotations": {
+            "product_id": "int",
+            "discount_pct": "float",
+            "reason": "str"
+          }
+        },
+        {
+          "name": "InventoryItem",
+          "fields": [
+            "product_id",
+            "quantity",
+            "reserved"
+          ],
+          "annotations": {
+            "product_id": "int",
+            "quantity": "int",
+            "reserved": "int"
+          }
+        },
+        {
+          "name": "CartItem",
+          "fields": [
+            "product_id",
+            "quantity"
+          ],
+          "annotations": {
+            "product_id": "int",
+            "quantity": "int"
+          }
+        },
+        {
+          "name": "Cart",
+          "fields": [
+            "user_id",
+            "items"
+          ],
+          "annotations": {
+            "user_id": "int",
+            "items": "list[CartItem]"
+          }
+        },
+        {
+          "name": "OrderLine",
+          "fields": [
+            "product_id",
+            "quantity",
+            "unit_price"
+          ],
+          "annotations": {
+            "product_id": "int",
+            "quantity": "int",
+            "unit_price": "float"
+          }
+        },
+        {
+          "name": "Order",
+          "fields": [
+            "id",
+            "user_id",
+            "lines",
+            "total",
+            "status",
+            "payment_id"
+          ],
+          "annotations": {
+            "id": "int",
+            "user_id": "int",
+            "lines": "list[OrderLine]",
+            "total": "float",
+            "status": "str",
+            "payment_id": "int | None"
+          }
+        },
+        {
+          "name": "Payment",
+          "fields": [
+            "id",
+            "order_id",
+            "user_id",
+            "amount",
+            "status",
+            "provider_ref"
+          ],
+          "annotations": {
+            "id": "int",
+            "order_id": "int",
+            "user_id": "int",
+            "amount": "float",
+            "status": "str",
+            "provider_ref": "str"
+          }
+        },
+        {
+          "name": "Notification",
+          "fields": [
+            "id",
+            "user_id",
+            "channel",
+            "subject",
+            "body",
+            "sent"
+          ],
+          "annotations": {
+            "id": "int",
+            "user_id": "int",
+            "channel": "str",
+            "subject": "str",
+            "body": "str",
+            "sent": "bool"
+          }
+        }
+      ],
+      "keywords": [
+        "models",
+        "platform",
+        "shared",
+        "domain",
+        "entities",
+        "kernel",
+        "monolith",
+        "every",
+        "bounded",
+        "context",
+        "imports",
+        "here",
+        "which",
+        "makes",
+        "natural",
+        "hub",
+        "dependency",
+        "graph",
+        "exactly",
+        "kind",
+        "coupling",
+        "real",
+        "decomposition",
+        "has",
+        "reason",
+        "about",
+        "user",
+        "product",
+        "pricerule",
+        "inventoryitem",
+        "cartitem",
+        "cart",
+        "orderline",
+        "order",
+        "payment",
+        "notification",
+        "email",
+        "name",
+        "password",
+        "hash",
+        "address",
+        "sku",
+        "category",
+        "base",
+        "price",
+        "discount",
+        "pct",
+        "quantity",
+        "reserved",
+        "unit",
+        "lines",
+        "total",
+        "status",
+        "amount",
+        "provider",
+        "ref",
+        "channel",
+        "subject",
+        "body",
+        "sent"
+      ],
+      "public_interface": [
+        "Cart",
+        "CartItem",
+        "InventoryItem",
+        "Notification",
+        "Order",
+        "OrderLine",
+        "Payment",
+        "PriceRule",
+        "Product",
+        "User",
+        "to_dict"
+      ],
+      "responsibility": "The `models` module belongs to the Platform context: it owns the User, Product, PriceRule, InventoryItem entity/entities.",
+      "suggested_domain": "Platform"
+    },
+    {
+      "module": "notifications",
+      "path": "monolith/notifications.py",
+      "loc": 37,
+      "url_prefix": "/notifications",
+      "imports_internal": [
+        {
+          "target": "config",
+          "kind": "call",
+          "weight": 3
+        },
+        {
+          "target": "db",
+          "kind": "attr",
+          "weight": 4
+        },
+        {
+          "target": "models",
+          "kind": "call",
+          "weight": 6
+        }
+      ],
+      "imports_external": [
+        "__future__",
+        "flask"
+      ],
+      "functions": [
+        {
+          "name": "enqueue",
+          "args": [
+            "user_id",
+            "channel",
+            "subject",
+            "body"
+          ],
+          "calls": [
+            "Notification",
+            "next_notification_id"
+          ],
+          "is_public": true
+        },
+        {
+          "name": "dispatch",
+          "args": [
+            "note"
+          ],
+          "calls": [
+            "get"
+          ],
+          "is_public": true
+        },
+        {
+          "name": "send",
+          "args": [],
+          "calls": [
+            "dispatch",
+            "enqueue",
+            "get",
+            "get_json",
+            "jsonify",
+            "post",
+            "to_dict"
+          ],
+          "is_public": true
+        }
+      ],
+      "classes": [],
+      "routes": [
+        {
+          "method": "POST",
+          "path": "/notifications/send",
+          "handler": "send"
+        }
+      ],
+      "entities": [],
+      "keywords": [
+        "notifications",
+        "transactional",
+        "email",
+        "sms",
+        "dispatch",
+        "enqueue",
+        "send"
+      ],
+      "public_interface": [
+        "dispatch",
+        "enqueue",
+        "send"
+      ],
+      "responsibility": "The `notifications` module belongs to the Notifications context: it exposes 1 HTTP route(s); collaborates with config, db, models.",
+      "suggested_domain": "Notifications"
+    },
+    {
+      "module": "orders",
+      "path": "monolith/orders.py",
+      "loc": 77,
+      "url_prefix": "/orders",
+      "imports_internal": [
+        {
+          "target": "basket",
+          "kind": "attr",
+          "weight": 2
+        },
+        {
+          "target": "db",
+          "kind": "attr",
+          "weight": 7
+        },
+        {
+          "target": "inventory",
+          "kind": "attr",
+          "weight": 2
+        },
+        {
+          "target": "models",
+          "kind": "call",
+          "weight": 9
+        },
+        {
+          "target": "notifications",
+          "kind": "attr",
+          "weight": 2
+        },
+        {
+          "target": "payments",
+          "kind": "attr",
+          "weight": 2
+        },
+        {
+          "target": "rating",
+          "kind": "attr",
+          "weight": 2
+        },
+        {
+          "target": "users",
+          "kind": "attr",
+          "weight": 2
+        }
+      ],
+      "imports_external": [
+        "__future__",
+        "flask"
+      ],
+      "functions": [
+        {
+          "name": "_build_lines",
+          "args": [
+            "user_id"
+          ],
+          "calls": [
+            "OrderLine",
+            "append",
+            "effective_price",
+            "get",
+            "get_cart"
+          ],
+          "is_public": false
+        },
+        {
+          "name": "checkout",
+          "args": [
+            "user_id"
+          ],
+          "calls": [
+            "KeyError",
+            "Order",
+            "_build_lines",
+            "charge",
+            "enqueue",
+            "get_user",
+            "next_order_id",
+            "pop",
+            "reserve",
+            "round",
+            "sum"
+          ],
+          "is_public": true
+        },
+        {
+          "name": "create_order",
+          "args": [],
+          "calls": [
+            "_serialize",
+            "checkout",
+            "get_json",
+            "jsonify",
+            "post"
+          ],
+          "is_public": true
+        },
+        {
+          "name": "list_orders",
+          "args": [],
+          "calls": [
+            "_serialize",
+            "get",
+            "jsonify",
+            "values"
+          ],
+          "is_public": true
+        },
+        {
+          "name": "get_order",
+          "args": [
+            "order_id"
+          ],
+          "calls": [
+            "_serialize",
+            "get",
+            "jsonify"
+          ],
+          "is_public": true
+        },
+        {
+          "name": "_serialize",
+          "args": [
+            "order"
+          ],
+          "calls": [
+            "to_dict"
+          ],
+          "is_public": false
+        }
+      ],
+      "classes": [],
+      "routes": [
+        {
+          "method": "POST",
+          "path": "/orders",
+          "handler": "create_order"
+        },
+        {
+          "method": "GET",
+          "path": "/orders",
+          "handler": "list_orders"
+        },
+        {
+          "method": "GET",
+          "path": "/orders/<int:order_id>",
+          "handler": "get_order"
+        }
+      ],
+      "entities": [],
+      "keywords": [
+        "orders",
+        "checkout",
+        "orchestration",
+        "most",
+        "cross",
+        "cutting",
+        "module",
+        "touches",
+        "catalog",
+        "inventory",
+        "payments",
+        "users",
+        "notifications",
+        "which",
+        "precisely",
+        "why",
+        "natural",
+        "first",
+        "service",
+        "extract",
+        "strangler",
+        "fig",
+        "pattern",
+        "phase",
+        "build",
+        "lines",
+        "create",
+        "order",
+        "serialize"
+      ],
+      "public_interface": [
+        "checkout",
+        "create_order",
+        "get_order",
+        "list_orders"
+      ],
+      "responsibility": "The `orders` module belongs to the Orders context: it exposes 3 HTTP route(s); collaborates with basket, db, inventory, models.",
+      "suggested_domain": "Orders"
+    },
+    {
+      "module": "payments",
+      "path": "monolith/payments.py",
+      "loc": 44,
+      "url_prefix": "/payments",
+      "imports_internal": [
+        {
+          "target": "config",
+          "kind": "call",
+          "weight": 3
+        },
+        {
+          "target": "db",
+          "kind": "attr",
+          "weight": 4
+        },
+        {
+          "target": "models",
+          "kind": "call",
+          "weight": 5
+        },
+        {
+          "target": "notifications",
+          "kind": "attr",
+          "weight": 2
+        }
+      ],
+      "imports_external": [
+        "__future__",
+        "flask",
+        "secrets"
+      ],
+      "functions": [
+        {
+          "name": "charge",
+          "args": [
+            "order_id",
+            "user_id",
+            "amount"
+          ],
+          "calls": [
+            "Payment",
+            "enqueue",
+            "next_payment_id",
+            "round",
+            "token_hex"
+          ],
+          "is_public": true
+        },
+        {
+          "name": "charge_route",
+          "args": [],
+          "calls": [
+            "charge",
+            "get_json",
+            "jsonify",
+            "post",
+            "to_dict"
+          ],
+          "is_public": true
+        },
+        {
+          "name": "get_payment",
+          "args": [
+            "payment_id"
+          ],
+          "calls": [
+            "get",
+            "jsonify",
+            "to_dict"
+          ],
+          "is_public": true
+        }
+      ],
+      "classes": [],
+      "routes": [
+        {
+          "method": "POST",
+          "path": "/payments/charge",
+          "handler": "charge_route"
+        },
+        {
+          "method": "GET",
+          "path": "/payments/<int:payment_id>",
+          "handler": "get_payment"
+        }
+      ],
+      "entities": [],
+      "keywords": [
+        "payments",
+        "charge",
+        "capture",
+        "against",
+        "orders",
+        "route",
+        "payment"
+      ],
+      "public_interface": [
+        "charge",
+        "charge_route",
+        "get_payment"
+      ],
+      "responsibility": "The `payments` module belongs to the Payments context: it exposes 2 HTTP route(s); collaborates with config, db, models, notifications.",
+      "suggested_domain": "Payments"
+    },
+    {
+      "module": "rating",
+      "path": "monolith/rating.py",
+      "loc": 41,
+      "url_prefix": "/pricing",
+      "imports_internal": [
+        {
+          "target": "config",
+          "kind": "call",
+          "weight": 3
+        },
+        {
+          "target": "db",
+          "kind": "attr",
+          "weight": 3
+        },
+        {
+          "target": "models",
+          "kind": "call",
+          "weight": 2
+        }
+      ],
+      "imports_external": [
+        "__future__",
+        "flask"
+      ],
+      "functions": [
+        {
+          "name": "effective_price",
+          "args": [
+            "product"
+          ],
+          "calls": [
+            "get",
+            "round"
+          ],
+          "is_public": true
+        },
+        {
+          "name": "with_tax",
+          "args": [
+            "amount"
+          ],
+          "calls": [
+            "round"
+          ],
+          "is_public": true
+        },
+        {
+          "name": "quote",
+          "args": [
+            "product_id"
+          ],
+          "calls": [
+            "effective_price",
+            "get",
+            "jsonify",
+            "with_tax"
+          ],
+          "is_public": true
+        }
+      ],
+      "classes": [],
+      "routes": [
+        {
+          "method": "GET",
+          "path": "/pricing/<int:product_id>",
+          "handler": "quote"
+        }
+      ],
+      "entities": [],
+      "keywords": [
+        "rating",
+        "effective",
+        "price",
+        "computation",
+        "discounts",
+        "tax",
+        "quotes",
+        "products",
+        "domain",
+        "neutral",
+        "module",
+        "name",
+        "purpose",
+        "see",
+        "discovery",
+        "quote",
+        "pricing",
+        "product"
+      ],
+      "public_interface": [
+        "effective_price",
+        "quote",
+        "with_tax"
+      ],
+      "responsibility": "The `rating` module belongs to the Catalog context: it exposes 1 HTTP route(s); collaborates with config, db, models.",
+      "suggested_domain": "Catalog"
+    },
+    {
+      "module": "users",
+      "path": "monolith/users.py",
+      "loc": 44,
+      "url_prefix": "/users",
+      "imports_internal": [
+        {
+          "target": "db",
+          "kind": "attr",
+          "weight": 5
+        },
+        {
+          "target": "models",
+          "kind": "call",
+          "weight": 7
+        },
+        {
+          "target": "notifications",
+          "kind": "attr",
+          "weight": 2
+        }
+      ],
+      "imports_external": [
+        "__future__",
+        "flask"
+      ],
+      "functions": [
+        {
+          "name": "get_user",
+          "args": [
+            "user_id"
+          ],
+          "calls": [
+            "get"
+          ],
+          "is_public": true
+        },
+        {
+          "name": "create_user",
+          "args": [
+            "email",
+            "name",
+            "password_hash",
+            "address"
+          ],
+          "calls": [
+            "User",
+            "enqueue",
+            "next_user_id"
+          ],
+          "is_public": true
+        },
+        {
+          "name": "list_users",
+          "args": [],
+          "calls": [
+            "get",
+            "jsonify",
+            "to_dict",
+            "values"
+          ],
+          "is_public": true
+        },
+        {
+          "name": "fetch_user",
+          "args": [
+            "user_id"
+          ],
+          "calls": [
+            "get",
+            "get_user",
+            "jsonify",
+            "to_dict"
+          ],
+          "is_public": true
+        },
+        {
+          "name": "add_user",
+          "args": [],
+          "calls": [
+            "create_user",
+            "get",
+            "get_json",
+            "jsonify",
+            "post",
+            "to_dict"
+          ],
+          "is_public": true
+        }
+      ],
+      "classes": [],
+      "routes": [
+        {
+          "method": "GET",
+          "path": "/users",
+          "handler": "list_users"
+        },
+        {
+          "method": "GET",
+          "path": "/users/<int:user_id>",
+          "handler": "fetch_user"
+        },
+        {
+          "method": "POST",
+          "path": "/users",
+          "handler": "add_user"
+        }
+      ],
+      "entities": [],
+      "keywords": [
+        "users",
+        "auth",
+        "user",
+        "profile",
+        "management",
+        "create",
+        "fetch",
+        "add"
+      ],
+      "public_interface": [
+        "add_user",
+        "create_user",
+        "fetch_user",
+        "get_user",
+        "list_users"
+      ],
+      "responsibility": "The `users` module belongs to the Users/Auth context: it exposes 3 HTTP route(s); collaborates with db, models, notifications.",
+      "suggested_domain": "Users/Auth"
+    }
+  ],
+  "graph": {
+    "nodes": [
+      "app",
+      "auth",
+      "basket",
+      "config",
+      "db",
+      "discovery",
+      "inventory",
+      "logistics",
+      "models",
+      "notifications",
+      "orders",
+      "payments",
+      "rating",
+      "users"
+    ],
+    "edges": [
+      {
+        "source": "app",
+        "target": "auth",
+        "weight": 2,
+        "kinds": [
+          "attr"
+        ]
+      },
+      {
+        "source": "app",
+        "target": "basket",
+        "weight": 2,
+        "kinds": [
+          "attr"
+        ]
+      },
+      {
+        "source": "app",
+        "target": "config",
+        "weight": 2,
+        "kinds": [
+          "call"
+        ]
+      },
+      {
+        "source": "app",
+        "target": "db",
+        "weight": 3,
+        "kinds": [
+          "attr"
+        ]
+      },
+      {
+        "source": "app",
+        "target": "discovery",
+        "weight": 2,
+        "kinds": [
+          "attr"
+        ]
+      },
+      {
+        "source": "app",
+        "target": "inventory",
+        "weight": 2,
+        "kinds": [
+          "attr"
+        ]
+      },
+      {
+        "source": "app",
+        "target": "logistics",
+        "weight": 2,
+        "kinds": [
+          "attr"
+        ]
+      },
+      {
+        "source": "app",
+        "target": "notifications",
+        "weight": 2,
+        "kinds": [
+          "attr"
+        ]
+      },
+      {
+        "source": "app",
+        "target": "orders",
+        "weight": 2,
+        "kinds": [
+          "attr"
+        ]
+      },
+      {
+        "source": "app",
+        "target": "payments",
+        "weight": 2,
+        "kinds": [
+          "attr"
+        ]
+      },
+      {
+        "source": "app",
+        "target": "rating",
+        "weight": 2,
+        "kinds": [
+          "attr"
+        ]
+      },
+      {
+        "source": "app",
+        "target": "users",
+        "weight": 2,
+        "kinds": [
+          "attr"
+        ]
+      },
+      {
+        "source": "auth",
+        "target": "config",
+        "weight": 2,
+        "kinds": [
+          "call"
+        ]
+      },
+      {
+        "source": "auth",
+        "target": "db",
+        "weight": 2,
+        "kinds": [
+          "attr"
+        ]
+      },
+      {
+        "source": "auth",
+        "target": "users",
+        "weight": 2,
+        "kinds": [
+          "attr"
+        ]
+      },
+      {
+        "source": "basket",
+        "target": "db",
+        "weight": 6,
+        "kinds": [
+          "attr"
+        ]
+      },
+      {
+        "source": "basket",
+        "target": "discovery",
+        "weight": 2,
+        "kinds": [
+          "attr"
+        ]
+      },
+      {
+        "source": "basket",
+        "target": "models",
+        "weight": 8,
+        "kinds": [
+          "call"
+        ]
+      },
+      {
+        "source": "basket",
+        "target": "rating",
+        "weight": 2,
+        "kinds": [
+          "attr"
+        ]
+      },
+      {
+        "source": "db",
+        "target": "models",
+        "weight": 16,
+        "kinds": [
+          "call"
+        ]
+      },
+      {
+        "source": "discovery",
+        "target": "db",
+        "weight": 3,
+        "kinds": [
+          "attr"
+        ]
+      },
+      {
+        "source": "discovery",
+        "target": "inventory",
+        "weight": 2,
+        "kinds": [
+          "attr"
+        ]
+      },
+      {
+        "source": "discovery",
+        "target": "models",
+        "weight": 3,
+        "kinds": [
+          "call"
+        ]
+      },
+      {
+        "source": "discovery",
+        "target": "rating",
+        "weight": 2,
+        "kinds": [
+          "attr"
+        ]
+      },
+      {
+        "source": "inventory",
+        "target": "db",
+        "weight": 4,
+        "kinds": [
+          "attr"
+        ]
+      },
+      {
+        "source": "inventory",
+        "target": "models",
+        "weight": 2,
+        "kinds": [
+          "call"
+        ]
+      },
+      {
+        "source": "logistics",
+        "target": "db",
+        "weight": 4,
+        "kinds": [
+          "attr"
+        ]
+      },
+      {
+        "source": "logistics",
+        "target": "inventory",
+        "weight": 3,
+        "kinds": [
+          "attr"
+        ]
+      },
+      {
+        "source": "notifications",
+        "target": "config",
+        "weight": 3,
+        "kinds": [
+          "call"
+        ]
+      },
+      {
+        "source": "notifications",
+        "target": "db",
+        "weight": 4,
+        "kinds": [
+          "attr"
+        ]
+      },
+      {
+        "source": "notifications",
+        "target": "models",
+        "weight": 6,
+        "kinds": [
+          "call"
+        ]
+      },
+      {
+        "source": "orders",
+        "target": "basket",
+        "weight": 2,
+        "kinds": [
+          "attr"
+        ]
+      },
+      {
+        "source": "orders",
+        "target": "db",
+        "weight": 7,
+        "kinds": [
+          "attr"
+        ]
+      },
+      {
+        "source": "orders",
+        "target": "inventory",
+        "weight": 2,
+        "kinds": [
+          "attr"
+        ]
+      },
+      {
+        "source": "orders",
+        "target": "models",
+        "weight": 9,
+        "kinds": [
+          "call"
+        ]
+      },
+      {
+        "source": "orders",
+        "target": "notifications",
+        "weight": 2,
+        "kinds": [
+          "attr"
+        ]
+      },
+      {
+        "source": "orders",
+        "target": "payments",
+        "weight": 2,
+        "kinds": [
+          "attr"
+        ]
+      },
+      {
+        "source": "orders",
+        "target": "rating",
+        "weight": 2,
+        "kinds": [
+          "attr"
+        ]
+      },
+      {
+        "source": "orders",
+        "target": "users",
+        "weight": 2,
+        "kinds": [
+          "attr"
+        ]
+      },
+      {
+        "source": "payments",
+        "target": "config",
+        "weight": 3,
+        "kinds": [
+          "call"
+        ]
+      },
+      {
+        "source": "payments",
+        "target": "db",
+        "weight": 4,
+        "kinds": [
+          "attr"
+        ]
+      },
+      {
+        "source": "payments",
+        "target": "models",
+        "weight": 5,
+        "kinds": [
+          "call"
+        ]
+      },
+      {
+        "source": "payments",
+        "target": "notifications",
+        "weight": 2,
+        "kinds": [
+          "attr"
+        ]
+      },
+      {
+        "source": "rating",
+        "target": "config",
+        "weight": 3,
+        "kinds": [
+          "call"
+        ]
+      },
+      {
+        "source": "rating",
+        "target": "db",
+        "weight": 3,
+        "kinds": [
+          "attr"
+        ]
+      },
+      {
+        "source": "rating",
+        "target": "models",
+        "weight": 2,
+        "kinds": [
+          "call"
+        ]
+      },
+      {
+        "source": "users",
+        "target": "db",
+        "weight": 5,
+        "kinds": [
+          "attr"
+        ]
+      },
+      {
+        "source": "users",
+        "target": "models",
+        "weight": 7,
+        "kinds": [
+          "call"
+        ]
+      },
+      {
+        "source": "users",
+        "target": "notifications",
+        "weight": 2,
+        "kinds": [
+          "attr"
+        ]
+      }
+    ]
+  },
+  "llm_mode": "mock",
+  "model": "mock"
+}
