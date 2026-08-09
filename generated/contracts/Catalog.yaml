@@ -1,0 +1,86 @@
+openapi: 3.1.0
+info:
+  title: Catalog Service API
+  version: 1.0.0
+  description: Product catalogue browsing and pricing.
+servers:
+- url: http://catalog:8000
+paths:
+  /catalog/products:
+    get:
+      operationId: get_catalog_products
+      summary: GET /catalog/products
+      tags:
+      - Catalog
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+  /catalog/products/{product_id}:
+    get:
+      operationId: get_catalog_products_product_id
+      summary: GET /catalog/products/<int:product_id>
+      tags:
+      - Catalog
+      parameters:
+      - name: product_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          description: Not found
+  /pricing/{product_id}:
+    get:
+      operationId: get_pricing_product_id
+      summary: GET /pricing/<int:product_id>
+      tags:
+      - Catalog
+      parameters:
+      - name: product_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Not found
+components:
+  schemas:
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+        sku:
+          type: string
+        name:
+          type: string
+        category:
+          type: string
+        base_price:
+          type: number
+      required:
+      - id
+      - sku
+      - name
+      - category
+      - base_price

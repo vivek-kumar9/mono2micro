@@ -1,0 +1,113 @@
+openapi: 3.1.0
+info:
+  title: Inventory Service API
+  version: 1.0.0
+  description: Stock levels and reservations.
+servers:
+- url: http://inventory:8000
+paths:
+  /inventory/{product_id}:
+    get:
+      operationId: get_inventory_product_id
+      summary: GET /inventory/<int:product_id>
+      tags:
+      - Inventory
+      parameters:
+      - name: product_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InventoryItem'
+        '404':
+          description: Not found
+  /inventory/reserve:
+    post:
+      operationId: post_inventory_reserve
+      summary: POST /inventory/reserve
+      tags:
+      - Inventory
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InventoryItem'
+        '400':
+          description: Invalid request
+  /logistics/{ref}/ship:
+    post:
+      operationId: post_logistics_ref_ship
+      summary: POST /logistics/<int:ref>/ship
+      tags:
+      - Inventory
+      parameters:
+      - name: ref
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Invalid request
+  /logistics/{ref}:
+    get:
+      operationId: get_logistics_ref
+      summary: GET /logistics/<int:ref>
+      tags:
+      - Inventory
+      parameters:
+      - name: ref
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Not found
+components:
+  schemas:
+    InventoryItem:
+      type: object
+      properties:
+        product_id:
+          type: integer
+        quantity:
+          type: integer
+        reserved:
+          type: integer
+      required:
+      - product_id
+      - quantity
+      - reserved

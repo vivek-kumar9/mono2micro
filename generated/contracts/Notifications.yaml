@@ -1,0 +1,53 @@
+openapi: 3.1.0
+info:
+  title: Notifications Service API
+  version: 1.0.0
+  description: Transactional email/SMS dispatch.
+servers:
+- url: http://notifications:8000
+paths:
+  /notifications/send:
+    post:
+      operationId: post_notifications_send
+      summary: POST /notifications/send
+      tags:
+      - Notifications
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notification'
+        '400':
+          description: Invalid request
+components:
+  schemas:
+    Notification:
+      type: object
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: integer
+        channel:
+          type: string
+        subject:
+          type: string
+        body:
+          type: string
+        sent:
+          type: boolean
+      required:
+      - id
+      - user_id
+      - channel
+      - subject
+      - body
+      - sent

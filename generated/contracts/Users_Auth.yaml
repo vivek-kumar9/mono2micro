@@ -1,0 +1,127 @@
+openapi: 3.1.0
+info:
+  title: Users/Auth Service API
+  version: 1.0.0
+  description: Identity, authentication and user profiles.
+servers:
+- url: http://users_auth:8000
+paths:
+  /auth/register:
+    post:
+      operationId: post_auth_register
+      summary: POST /auth/register
+      tags:
+      - Users/Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Invalid request
+  /auth/login:
+    post:
+      operationId: post_auth_login
+      summary: POST /auth/login
+      tags:
+      - Users/Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Invalid request
+  /users:
+    get:
+      operationId: get_users
+      summary: GET /users
+      tags:
+      - Users/Auth
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+    post:
+      operationId: post_users
+      summary: POST /users
+      tags:
+      - Users/Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid request
+  /users/{user_id}:
+    get:
+      operationId: get_users_user_id
+      summary: GET /users/<int:user_id>
+      tags:
+      - Users/Auth
+      parameters:
+      - name: user_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: Not found
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+        name:
+          type: string
+        password_hash:
+          type: string
+        address:
+          type: string
+      required:
+      - id
+      - email
+      - name
+      - password_hash
+      - address

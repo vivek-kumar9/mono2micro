@@ -1,0 +1,40 @@
+openapi: 3.1.0
+info:
+  title: Platform Service API
+  version: 1.0.0
+  description: 'Shared kernel: configuration, persistence and models.'
+servers:
+- url: http://platform:8000
+paths:
+  /health:
+    get:
+      operationId: get_health
+      summary: GET /health
+      tags:
+      - Platform
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+  /:
+    get:
+      operationId: get_root
+      summary: GET /
+      tags:
+      - Platform
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+components:
+  schemas: {}

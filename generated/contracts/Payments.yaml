@@ -1,0 +1,74 @@
+openapi: 3.1.0
+info:
+  title: Payments Service API
+  version: 1.0.0
+  description: Charge capture and payment records.
+servers:
+- url: http://payments:8000
+paths:
+  /payments/charge:
+    post:
+      operationId: post_payments_charge
+      summary: POST /payments/charge
+      tags:
+      - Payments
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+        '400':
+          description: Invalid request
+  /payments/{payment_id}:
+    get:
+      operationId: get_payments_payment_id
+      summary: GET /payments/<int:payment_id>
+      tags:
+      - Payments
+      parameters:
+      - name: payment_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+        '404':
+          description: Not found
+components:
+  schemas:
+    Payment:
+      type: object
+      properties:
+        id:
+          type: integer
+        order_id:
+          type: integer
+        user_id:
+          type: integer
+        amount:
+          type: number
+        status:
+          type: string
+        provider_ref:
+          type: string
+      required:
+      - id
+      - order_id
+      - user_id
+      - amount
+      - status
+      - provider_ref
