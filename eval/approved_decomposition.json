@@ -1,0 +1,78 @@
+{
+  "approved": true,
+  "approved_by": "cli",
+  "services": [
+    {
+      "name": "Catalog",
+      "modules": [
+        "discovery",
+        "rating"
+      ],
+      "description": "Product catalogue browsing and pricing.",
+      "rationale": "Seeded from dependency-cluster membership, then re-labelled where module-content domain signal is decisive.",
+      "kind": "microservice"
+    },
+    {
+      "name": "Inventory",
+      "modules": [
+        "inventory",
+        "logistics"
+      ],
+      "description": "Stock levels and reservations.",
+      "rationale": "Seeded from dependency-cluster membership, then re-labelled where module-content domain signal is decisive.",
+      "kind": "microservice"
+    },
+    {
+      "name": "Notifications",
+      "modules": [
+        "notifications"
+      ],
+      "description": "Transactional email/SMS dispatch.",
+      "rationale": "Seeded from dependency-cluster membership, then re-labelled where module-content domain signal is decisive.",
+      "kind": "microservice"
+    },
+    {
+      "name": "Orders",
+      "modules": [
+        "basket",
+        "orders"
+      ],
+      "description": "Cart and checkout orchestration.",
+      "rationale": "Seeded from dependency-cluster membership, then re-labelled where module-content domain signal is decisive.",
+      "kind": "microservice"
+    },
+    {
+      "name": "Payments",
+      "modules": [
+        "payments"
+      ],
+      "description": "Charge capture and payment records.",
+      "rationale": "Seeded from dependency-cluster membership, then re-labelled where module-content domain signal is decisive.",
+      "kind": "microservice"
+    },
+    {
+      "name": "Users/Auth",
+      "modules": [
+        "auth",
+        "users"
+      ],
+      "description": "Identity, authentication and user profiles.",
+      "rationale": "Seeded from dependency-cluster membership, then re-labelled where module-content domain signal is decisive.",
+      "kind": "microservice"
+    },
+    {
+      "name": "Platform",
+      "modules": [
+        "app",
+        "config",
+        "db",
+        "models"
+      ],
+      "description": "Shared kernel: configuration, persistence and models.",
+      "rationale": "Seeded from dependency-cluster membership, then re-labelled where module-content domain signal is decisive.",
+      "kind": "shared-kernel"
+    }
+  ],
+  "extraction_target": "Orders",
+  "notes": "Auto-approved via CLI (non-interactive path)."
+}
