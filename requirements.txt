@@ -19,3 +19,7 @@ anthropic>=0.40
 
 # --- Tests ---
 pytest>=8.0
+# imported directly by tests/test_strangler_integration.py and scripts/local_demo.py
+# to drive the sync WSGI monolith from an async gateway; arrives transitively via
+# httpx/fastapi, but a direct import belongs in the manifest.
+anyio>=4.0
