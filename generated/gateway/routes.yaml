@@ -1,0 +1,9 @@
+default_backend: monolith
+backends:
+  monolith: ${MONOLITH_URL}
+  orders-service: ${ORDERS_URL}
+routes:
+- prefix: /cart
+  backend: orders-service
+- prefix: /orders
+  backend: orders-service
