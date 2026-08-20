@@ -1,0 +1,12 @@
+# The still-running monolith (Flask / WSGI). In a strangler migration this keeps
+# serving every route that has not yet been extracted.
+FROM python:3.11-slim
+
+WORKDIR /app
+RUN pip install --no-cache-dir "flask>=3.0"
+
+COPY monolith ./monolith
+
+EXPOSE 8000
+# monolith/app.py runs app.run(host=0.0.0.0, port=8000) under __main__
+CMD ["python", "-m", "monolith.app"]

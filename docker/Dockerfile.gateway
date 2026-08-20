@@ -1,0 +1,13 @@
+# The strangler-fig gateway (generated FastAPI). Routes extracted prefixes to the
+# new service and everything else to the monolith, using the route table baked in
+# at generation time (generated/gateway/routes.yaml).
+FROM python:3.11-slim
+
+WORKDIR /app
+COPY generated/gateway/requirements.txt ./requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY generated/gateway/ ./
+
+EXPOSE 8080
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]

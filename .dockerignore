@@ -1,0 +1,21 @@
+# Keep the build context small and reproducible. Without this, `docker build`
+# ships the whole .venv (hundreds of MB) and .git to the daemon on every build.
+.venv/
+venv/
+.git/
+.gitignore
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.DS_Store
+.env
+
+# tooling artifacts not needed inside any image
+tests/
+scripts/
+review_ui/
+eval/*.md
+generated/llm_trace.jsonl
+*.log

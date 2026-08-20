@@ -1,0 +1,49 @@
+# Strangler-fig topology: gateway in front of the (still-running) monolith and
+# the newly-extracted Orders service.
+#
+#   client ─▶ gateway :8080 ─┬─ /orders,/cart ─▶ orders-service :8000  (NEW)
+#                            └─ everything else ─▶ monolith :8000       (OLD)
+#
+# Prereq: run `make generate` first so generated/services + generated/gateway exist.
+# Then:   docker compose -f docker/docker-compose.yml up --build
+services:
+  monolith:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.monolith
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=3)"]
+      interval: 5s
+      timeout: 4s
+      retries: 5
+      start_period: 5s
+
+  orders-service:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.service
+    ports:
+      - "8001:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=3)"]
+      interval: 5s
+      timeout: 4s
+      retries: 5
+      start_period: 5s
+
+  gateway:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.gateway
+    environment:
+      MONOLITH_URL: "http://monolith:8000"
+      ORDERS_URL: "http://orders-service:8000"
+    ports:
+      - "8080:8080"
+    depends_on:
+      monolith:
+        condition: service_healthy
+      orders-service:
+        condition: service_healthy

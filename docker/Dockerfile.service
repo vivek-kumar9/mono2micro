@@ -1,0 +1,12 @@
+# The extracted microservice (generated FastAPI skeleton for the Orders context).
+# Build requires `make generate` to have produced generated/services/orders.
+FROM python:3.11-slim
+
+WORKDIR /app
+COPY generated/services/orders/requirements.txt ./requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY generated/services/orders/ ./
+
+EXPOSE 8000
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
