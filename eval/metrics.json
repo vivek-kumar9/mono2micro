@@ -1,0 +1,1154 @@
+{
+  "meta": {
+    "llm_mode": "mock",
+    "model": "mock",
+    "modules": 14,
+    "edges": 49,
+    "method": "idf-greedy-modularity(hub-aware, res=0.8) + llm-refine"
+  },
+  "random_baseline": {
+    "trials": 50,
+    "n_services": 6,
+    "ari": 0.02123956794061938,
+    "ari_std": 0.11175848659853696,
+    "nmi": 0.5825049104528492,
+    "macro_f1": 0.45998639455782314,
+    "modularity": -0.08208007346189165,
+    "cut_ratio": 0.8345454545454546
+  },
+  "partitions": {
+    "refined": {
+      "label": "refined",
+      "n_modules": 14,
+      "n_predicted_services": 7,
+      "n_truth_services": 7,
+      "clustering_agreement": {
+        "adjusted_rand_index": 0.8385570668243642,
+        "rand_index": 0.967032967032967,
+        "pairwise_precision": 0.9,
+        "pairwise_recall": 0.8181818181818182,
+        "pairwise_f1": 0.8571428571428572,
+        "fowlkes_mallows": 0.8581163303210332,
+        "nmi": 0.9356151675317642,
+        "homogeneity": 0.9452775652503478,
+        "completeness": 0.9261483044714681,
+        "v_measure": 0.9356151675317643,
+        "mutual_information_nats": 1.710493230055004
+      },
+      "per_service": [
+        {
+          "truth_service": "Catalog",
+          "matched_prediction": "Catalog",
+          "tp": 2,
+          "predicted_size": 2,
+          "truth_size": 2,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        {
+          "truth_service": "Inventory",
+          "matched_prediction": "Inventory",
+          "tp": 1,
+          "predicted_size": 2,
+          "truth_size": 1,
+          "precision": 0.5,
+          "recall": 1.0,
+          "f1": 0.6666666666666666
+        },
+        {
+          "truth_service": "Notifications",
+          "matched_prediction": "Notifications",
+          "tp": 1,
+          "predicted_size": 1,
+          "truth_size": 1,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        {
+          "truth_service": "Orders",
+          "matched_prediction": "Orders",
+          "tp": 2,
+          "predicted_size": 2,
+          "truth_size": 3,
+          "precision": 1.0,
+          "recall": 0.6666666666666666,
+          "f1": 0.8
+        },
+        {
+          "truth_service": "Payments",
+          "matched_prediction": "Payments",
+          "tp": 1,
+          "predicted_size": 1,
+          "truth_size": 1,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        {
+          "truth_service": "Platform",
+          "matched_prediction": "Platform",
+          "tp": 4,
+          "predicted_size": 4,
+          "truth_size": 4,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        {
+          "truth_service": "Users/Auth",
+          "matched_prediction": "Users/Auth",
+          "tp": 2,
+          "predicted_size": 2,
+          "truth_size": 2,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        }
+      ],
+      "labelled_summary": {
+        "macro_precision": 0.9285714285714286,
+        "macro_recall": 0.9523809523809524,
+        "macro_f1": 0.9238095238095239,
+        "weighted_f1": 0.9333333333333333,
+        "mapping_truth_to_pred": {
+          "Catalog": "Catalog",
+          "Inventory": "Inventory",
+          "Notifications": "Notifications",
+          "Orders": "Orders",
+          "Payments": "Payments",
+          "Platform": "Platform",
+          "Users/Auth": "Users/Auth"
+        }
+      },
+      "structure": {
+        "modularity": -0.09713498622589535,
+        "total_internal_weight": 30.0,
+        "total_external_weight": 135.0,
+        "cut_ratio": 0.8181818181818182,
+        "avg_cohesion": 0.06937436513066765,
+        "avg_instability": 0.6297636111300707,
+        "per_service": [
+          {
+            "service": "Catalog",
+            "modules": 2,
+            "internal_weight": 2.0,
+            "afferent_ca": 10.0,
+            "efferent_ce": 16.0,
+            "instability": 0.6153846153846154,
+            "cohesion_ratio": 0.07142857142857142
+          },
+          {
+            "service": "Inventory",
+            "modules": 2,
+            "internal_weight": 3.0,
+            "afferent_ca": 8.0,
+            "efferent_ce": 10.0,
+            "instability": 0.5555555555555556,
+            "cohesion_ratio": 0.14285714285714285
+          },
+          {
+            "service": "Notifications",
+            "modules": 1,
+            "internal_weight": 0.0,
+            "afferent_ca": 8.0,
+            "efferent_ce": 13.0,
+            "instability": 0.6190476190476191,
+            "cohesion_ratio": 0.0
+          },
+          {
+            "service": "Orders",
+            "modules": 2,
+            "internal_weight": 2.0,
+            "afferent_ca": 4.0,
+            "efferent_ce": 44.0,
+            "instability": 0.9166666666666666,
+            "cohesion_ratio": 0.04
+          },
+          {
+            "service": "Payments",
+            "modules": 1,
+            "internal_weight": 0.0,
+            "afferent_ca": 4.0,
+            "efferent_ce": 14.0,
+            "instability": 0.7777777777777778,
+            "cohesion_ratio": 0.0
+          },
+          {
+            "service": "Platform",
+            "modules": 4,
+            "internal_weight": 21.0,
+            "afferent_ca": 95.0,
+            "efferent_ce": 20.0,
+            "instability": 0.17391304347826086,
+            "cohesion_ratio": 0.15441176470588236
+          },
+          {
+            "service": "Users/Auth",
+            "modules": 2,
+            "internal_weight": 2.0,
+            "afferent_ca": 6.0,
+            "efferent_ce": 18.0,
+            "instability": 0.75,
+            "cohesion_ratio": 0.07692307692307693
+          }
+        ]
+      },
+      "extras": {}
+    },
+    "algorithmic": {
+      "label": "algorithmic",
+      "n_modules": 14,
+      "n_predicted_services": 4,
+      "n_truth_services": 7,
+      "clustering_agreement": {
+        "adjusted_rand_index": 0.16911472806669314,
+        "rand_index": 0.7472527472527473,
+        "pairwise_precision": 0.22727272727272727,
+        "pairwise_recall": 0.45454545454545453,
+        "pairwise_f1": 0.30303030303030304,
+        "fowlkes_mallows": 0.3214121732666125,
+        "nmi": 0.5819825664158185,
+        "homogeneity": 0.5002565988820794,
+        "completeness": 0.6956255945852785,
+        "v_measure": 0.5819825664158185,
+        "mutual_information_nats": 0.9052214472597986
+      },
+      "per_service": [
+        {
+          "truth_service": "Catalog",
+          "matched_prediction": "C1",
+          "tp": 2,
+          "predicted_size": 3,
+          "truth_size": 2,
+          "precision": 0.6666666666666666,
+          "recall": 1.0,
+          "f1": 0.8
+        },
+        {
+          "truth_service": "Inventory",
+          "matched_prediction": "C2",
+          "tp": 1,
+          "predicted_size": 2,
+          "truth_size": 1,
+          "precision": 0.5,
+          "recall": 1.0,
+          "f1": 0.6666666666666666
+        },
+        {
+          "truth_service": "Notifications",
+          "matched_prediction": null,
+          "tp": 0,
+          "predicted_size": 0,
+          "truth_size": 1,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        {
+          "truth_service": "Orders",
+          "matched_prediction": null,
+          "tp": 0,
+          "predicted_size": 0,
+          "truth_size": 3,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        {
+          "truth_service": "Payments",
+          "matched_prediction": null,
+          "tp": 0,
+          "predicted_size": 0,
+          "truth_size": 1,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        {
+          "truth_service": "Platform",
+          "matched_prediction": "C3",
+          "tp": 3,
+          "predicted_size": 3,
+          "truth_size": 4,
+          "precision": 1.0,
+          "recall": 0.75,
+          "f1": 0.8571428571428571
+        },
+        {
+          "truth_service": "Users/Auth",
+          "matched_prediction": "C0",
+          "tp": 2,
+          "predicted_size": 6,
+          "truth_size": 2,
+          "precision": 0.3333333333333333,
+          "recall": 1.0,
+          "f1": 0.5
+        }
+      ],
+      "labelled_summary": {
+        "macro_precision": 0.35714285714285715,
+        "macro_recall": 0.5357142857142857,
+        "macro_f1": 0.40340136054421766,
+        "weighted_f1": 0.4782312925170068,
+        "mapping_truth_to_pred": {
+          "Catalog": "C1",
+          "Inventory": "C2",
+          "Platform": "C3",
+          "Users/Auth": "C0"
+        }
+      },
+      "structure": {
+        "modularity": -0.04073461891643712,
+        "total_internal_weight": 48.0,
+        "total_external_weight": 117.0,
+        "cut_ratio": 0.7090909090909091,
+        "avg_cohesion": 0.16187853692201518,
+        "avg_instability": 0.5747042527702905,
+        "per_service": [
+          {
+            "service": "C0",
+            "modules": 6,
+            "internal_weight": 20.0,
+            "afferent_ca": 15.0,
+            "efferent_ce": 55.0,
+            "instability": 0.7857142857142857,
+            "cohesion_ratio": 0.2222222222222222
+          },
+          {
+            "service": "C1",
+            "modules": 3,
+            "internal_weight": 6.0,
+            "afferent_ca": 10.0,
+            "efferent_ce": 30.0,
+            "instability": 0.75,
+            "cohesion_ratio": 0.13043478260869565
+          },
+          {
+            "service": "C2",
+            "modules": 2,
+            "internal_weight": 3.0,
+            "afferent_ca": 8.0,
+            "efferent_ce": 10.0,
+            "instability": 0.5555555555555556,
+            "cohesion_ratio": 0.14285714285714285
+          },
+          {
+            "service": "C3",
+            "modules": 3,
+            "internal_weight": 19.0,
+            "afferent_ca": 84.0,
+            "efferent_ce": 22.0,
+            "instability": 0.20754716981132076,
+            "cohesion_ratio": 0.152
+          }
+        ]
+      },
+      "extras": {}
+    },
+    "louvain": {
+      "label": "louvain",
+      "n_modules": 14,
+      "n_predicted_services": 2,
+      "n_truth_services": 7,
+      "clustering_agreement": {
+        "adjusted_rand_index": -0.050269299820466774,
+        "rand_index": 0.5054945054945055,
+        "pairwise_precision": 0.09523809523809523,
+        "pairwise_recall": 0.36363636363636365,
+        "pairwise_f1": 0.1509433962264151,
+        "fowlkes_mallows": 0.18609684207969418,
+        "nmi": 0.20752963720388493,
+        "homogeneity": 0.14351266320872255,
+        "completeness": 0.3746508927026093,
+        "v_measure": 0.2075296372038849,
+        "mutual_information_nats": 0.2596882099710802
+      },
+      "per_service": [
+        {
+          "truth_service": "Catalog",
+          "matched_prediction": "K0",
+          "tp": 2,
+          "predicted_size": 7,
+          "truth_size": 2,
+          "precision": 0.2857142857142857,
+          "recall": 1.0,
+          "f1": 0.4444444444444445
+        },
+        {
+          "truth_service": "Inventory",
+          "matched_prediction": null,
+          "tp": 0,
+          "predicted_size": 0,
+          "truth_size": 1,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        {
+          "truth_service": "Notifications",
+          "matched_prediction": null,
+          "tp": 0,
+          "predicted_size": 0,
+          "truth_size": 1,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        {
+          "truth_service": "Orders",
+          "matched_prediction": "K1",
+          "tp": 2,
+          "predicted_size": 7,
+          "truth_size": 3,
+          "precision": 0.2857142857142857,
+          "recall": 0.6666666666666666,
+          "f1": 0.4
+        },
+        {
+          "truth_service": "Payments",
+          "matched_prediction": null,
+          "tp": 0,
+          "predicted_size": 0,
+          "truth_size": 1,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        {
+          "truth_service": "Platform",
+          "matched_prediction": null,
+          "tp": 0,
+          "predicted_size": 0,
+          "truth_size": 4,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        {
+          "truth_service": "Users/Auth",
+          "matched_prediction": null,
+          "tp": 0,
+          "predicted_size": 0,
+          "truth_size": 2,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        }
+      ],
+      "labelled_summary": {
+        "macro_precision": 0.08163265306122448,
+        "macro_recall": 0.23809523809523808,
+        "macro_f1": 0.12063492063492065,
+        "weighted_f1": 0.1492063492063492,
+        "mapping_truth_to_pred": {
+          "Catalog": "K0",
+          "Orders": "K1"
+        }
+      },
+      "structure": {
+        "modularity": 0.10725436179981636,
+        "total_internal_weight": 113.0,
+        "total_external_weight": 52.0,
+        "cut_ratio": 0.3151515151515151,
+        "avg_cohesion": 0.4734975737215379,
+        "avg_instability": 0.5,
+        "per_service": [
+          {
+            "service": "K0",
+            "modules": 7,
+            "internal_weight": 24.0,
+            "afferent_ca": 14.0,
+            "efferent_ce": 38.0,
+            "instability": 0.7307692307692307,
+            "cohesion_ratio": 0.3157894736842105
+          },
+          {
+            "service": "K1",
+            "modules": 7,
+            "internal_weight": 89.0,
+            "afferent_ca": 38.0,
+            "efferent_ce": 14.0,
+            "instability": 0.2692307692307692,
+            "cohesion_ratio": 0.6312056737588653
+          }
+        ]
+      },
+      "extras": {}
+    },
+    "greedy_raw": {
+      "label": "greedy_raw",
+      "n_modules": 14,
+      "n_predicted_services": 2,
+      "n_truth_services": 7,
+      "clustering_agreement": {
+        "adjusted_rand_index": -0.050269299820466774,
+        "rand_index": 0.5054945054945055,
+        "pairwise_precision": 0.09523809523809523,
+        "pairwise_recall": 0.36363636363636365,
+        "pairwise_f1": 0.1509433962264151,
+        "fowlkes_mallows": 0.18609684207969418,
+        "nmi": 0.20752963720388493,
+        "homogeneity": 0.14351266320872255,
+        "completeness": 0.3746508927026093,
+        "v_measure": 0.2075296372038849,
+        "mutual_information_nats": 0.2596882099710802
+      },
+      "per_service": [
+        {
+          "truth_service": "Catalog",
+          "matched_prediction": "K0",
+          "tp": 2,
+          "predicted_size": 7,
+          "truth_size": 2,
+          "precision": 0.2857142857142857,
+          "recall": 1.0,
+          "f1": 0.4444444444444445
+        },
+        {
+          "truth_service": "Inventory",
+          "matched_prediction": null,
+          "tp": 0,
+          "predicted_size": 0,
+          "truth_size": 1,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        {
+          "truth_service": "Notifications",
+          "matched_prediction": null,
+          "tp": 0,
+          "predicted_size": 0,
+          "truth_size": 1,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        {
+          "truth_service": "Orders",
+          "matched_prediction": "K1",
+          "tp": 2,
+          "predicted_size": 7,
+          "truth_size": 3,
+          "precision": 0.2857142857142857,
+          "recall": 0.6666666666666666,
+          "f1": 0.4
+        },
+        {
+          "truth_service": "Payments",
+          "matched_prediction": null,
+          "tp": 0,
+          "predicted_size": 0,
+          "truth_size": 1,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        {
+          "truth_service": "Platform",
+          "matched_prediction": null,
+          "tp": 0,
+          "predicted_size": 0,
+          "truth_size": 4,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        {
+          "truth_service": "Users/Auth",
+          "matched_prediction": null,
+          "tp": 0,
+          "predicted_size": 0,
+          "truth_size": 2,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        }
+      ],
+      "labelled_summary": {
+        "macro_precision": 0.08163265306122448,
+        "macro_recall": 0.23809523809523808,
+        "macro_f1": 0.12063492063492065,
+        "weighted_f1": 0.1492063492063492,
+        "mapping_truth_to_pred": {
+          "Catalog": "K0",
+          "Orders": "K1"
+        }
+      },
+      "structure": {
+        "modularity": 0.10725436179981636,
+        "total_internal_weight": 113.0,
+        "total_external_weight": 52.0,
+        "cut_ratio": 0.3151515151515151,
+        "avg_cohesion": 0.4734975737215379,
+        "avg_instability": 0.5,
+        "per_service": [
+          {
+            "service": "K0",
+            "modules": 7,
+            "internal_weight": 24.0,
+            "afferent_ca": 14.0,
+            "efferent_ce": 38.0,
+            "instability": 0.7307692307692307,
+            "cohesion_ratio": 0.3157894736842105
+          },
+          {
+            "service": "K1",
+            "modules": 7,
+            "internal_weight": 89.0,
+            "afferent_ca": 38.0,
+            "efferent_ce": 14.0,
+            "instability": 0.2692307692307692,
+            "cohesion_ratio": 0.6312056737588653
+          }
+        ]
+      },
+      "extras": {}
+    },
+    "ground_truth": {
+      "label": "ground_truth",
+      "n_modules": 14,
+      "n_predicted_services": 7,
+      "n_truth_services": 7,
+      "clustering_agreement": {
+        "adjusted_rand_index": 1.0,
+        "rand_index": 1.0,
+        "pairwise_precision": 1.0,
+        "pairwise_recall": 1.0,
+        "pairwise_f1": 1.0,
+        "fowlkes_mallows": 1.0,
+        "nmi": 1.0,
+        "homogeneity": 1.0,
+        "completeness": 1.0,
+        "v_measure": 1.0,
+        "mutual_information_nats": 1.8095142558492818
+      },
+      "per_service": [
+        {
+          "truth_service": "Catalog",
+          "matched_prediction": "Catalog",
+          "tp": 2,
+          "predicted_size": 2,
+          "truth_size": 2,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        {
+          "truth_service": "Inventory",
+          "matched_prediction": "Inventory",
+          "tp": 1,
+          "predicted_size": 1,
+          "truth_size": 1,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        {
+          "truth_service": "Notifications",
+          "matched_prediction": "Notifications",
+          "tp": 1,
+          "predicted_size": 1,
+          "truth_size": 1,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        {
+          "truth_service": "Orders",
+          "matched_prediction": "Orders",
+          "tp": 3,
+          "predicted_size": 3,
+          "truth_size": 3,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        {
+          "truth_service": "Payments",
+          "matched_prediction": "Payments",
+          "tp": 1,
+          "predicted_size": 1,
+          "truth_size": 1,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        {
+          "truth_service": "Platform",
+          "matched_prediction": "Platform",
+          "tp": 4,
+          "predicted_size": 4,
+          "truth_size": 4,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        {
+          "truth_service": "Users/Auth",
+          "matched_prediction": "Users/Auth",
+          "tp": 2,
+          "predicted_size": 2,
+          "truth_size": 2,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        }
+      ],
+      "labelled_summary": {
+        "macro_precision": 1.0,
+        "macro_recall": 1.0,
+        "macro_f1": 1.0,
+        "weighted_f1": 1.0,
+        "mapping_truth_to_pred": {
+          "Catalog": "Catalog",
+          "Inventory": "Inventory",
+          "Notifications": "Notifications",
+          "Orders": "Orders",
+          "Payments": "Payments",
+          "Platform": "Platform",
+          "Users/Auth": "Users/Auth"
+        }
+      },
+      "structure": {
+        "modularity": -0.12143250688705237,
+        "total_internal_weight": 27.0,
+        "total_external_weight": 138.0,
+        "cut_ratio": 0.8363636363636363,
+        "avg_cohesion": 0.04809453116318235,
+        "avg_instability": 0.604408556827648,
+        "per_service": [
+          {
+            "service": "Catalog",
+            "modules": 2,
+            "internal_weight": 2.0,
+            "afferent_ca": 10.0,
+            "efferent_ce": 16.0,
+            "instability": 0.6153846153846154,
+            "cohesion_ratio": 0.07142857142857142
+          },
+          {
+            "service": "Inventory",
+            "modules": 1,
+            "internal_weight": 0.0,
+            "afferent_ca": 9.0,
+            "efferent_ce": 6.0,
+            "instability": 0.4,
+            "cohesion_ratio": 0.0
+          },
+          {
+            "service": "Notifications",
+            "modules": 1,
+            "internal_weight": 0.0,
+            "afferent_ca": 8.0,
+            "efferent_ce": 13.0,
+            "instability": 0.6190476190476191,
+            "cohesion_ratio": 0.0
+          },
+          {
+            "service": "Orders",
+            "modules": 3,
+            "internal_weight": 2.0,
+            "afferent_ca": 6.0,
+            "efferent_ce": 51.0,
+            "instability": 0.8947368421052632,
+            "cohesion_ratio": 0.03389830508474576
+          },
+          {
+            "service": "Payments",
+            "modules": 1,
+            "internal_weight": 0.0,
+            "afferent_ca": 4.0,
+            "efferent_ce": 14.0,
+            "instability": 0.7777777777777778,
+            "cohesion_ratio": 0.0
+          },
+          {
+            "service": "Platform",
+            "modules": 4,
+            "internal_weight": 21.0,
+            "afferent_ca": 95.0,
+            "efferent_ce": 20.0,
+            "instability": 0.17391304347826086,
+            "cohesion_ratio": 0.15441176470588236
+          },
+          {
+            "service": "Users/Auth",
+            "modules": 2,
+            "internal_weight": 2.0,
+            "afferent_ca": 6.0,
+            "efferent_ce": 18.0,
+            "instability": 0.75,
+            "cohesion_ratio": 0.07692307692307693
+          }
+        ]
+      },
+      "extras": {}
+    },
+    "single_service": {
+      "label": "single_service",
+      "n_modules": 14,
+      "n_predicted_services": 1,
+      "n_truth_services": 7,
+      "clustering_agreement": {
+        "adjusted_rand_index": 0.0,
+        "rand_index": 0.12087912087912088,
+        "pairwise_precision": 0.12087912087912088,
+        "pairwise_recall": 1.0,
+        "pairwise_f1": 0.21568627450980393,
+        "fowlkes_mallows": 0.3476767476825577,
+        "nmi": 0.0,
+        "homogeneity": 0.0,
+        "completeness": 1.0,
+        "v_measure": 0.0,
+        "mutual_information_nats": 0.0
+      },
+      "per_service": [
+        {
+          "truth_service": "Catalog",
+          "matched_prediction": null,
+          "tp": 0,
+          "predicted_size": 0,
+          "truth_size": 2,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        {
+          "truth_service": "Inventory",
+          "matched_prediction": null,
+          "tp": 0,
+          "predicted_size": 0,
+          "truth_size": 1,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        {
+          "truth_service": "Notifications",
+          "matched_prediction": null,
+          "tp": 0,
+          "predicted_size": 0,
+          "truth_size": 1,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        {
+          "truth_service": "Orders",
+          "matched_prediction": null,
+          "tp": 0,
+          "predicted_size": 0,
+          "truth_size": 3,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        {
+          "truth_service": "Payments",
+          "matched_prediction": null,
+          "tp": 0,
+          "predicted_size": 0,
+          "truth_size": 1,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        {
+          "truth_service": "Platform",
+          "matched_prediction": "Monolith",
+          "tp": 4,
+          "predicted_size": 14,
+          "truth_size": 4,
+          "precision": 0.2857142857142857,
+          "recall": 1.0,
+          "f1": 0.4444444444444445
+        },
+        {
+          "truth_service": "Users/Auth",
+          "matched_prediction": null,
+          "tp": 0,
+          "predicted_size": 0,
+          "truth_size": 2,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        }
+      ],
+      "labelled_summary": {
+        "macro_precision": 0.04081632653061224,
+        "macro_recall": 0.14285714285714285,
+        "macro_f1": 0.0634920634920635,
+        "weighted_f1": 0.126984126984127,
+        "mapping_truth_to_pred": {
+          "Platform": "Monolith"
+        }
+      },
+      "structure": {
+        "modularity": 0.0,
+        "total_internal_weight": 165.0,
+        "total_external_weight": 0.0,
+        "cut_ratio": 0.0,
+        "avg_cohesion": 1.0,
+        "avg_instability": 0.0,
+        "per_service": [
+          {
+            "service": "Monolith",
+            "modules": 14,
+            "internal_weight": 165.0,
+            "afferent_ca": 0.0,
+            "efferent_ce": 0.0,
+            "instability": 0.0,
+            "cohesion_ratio": 1.0
+          }
+        ]
+      },
+      "extras": {}
+    },
+    "per_module": {
+      "label": "per_module",
+      "n_modules": 14,
+      "n_predicted_services": 14,
+      "n_truth_services": 7,
+      "clustering_agreement": {
+        "adjusted_rand_index": 0.0,
+        "rand_index": 0.8791208791208791,
+        "pairwise_precision": 0.0,
+        "pairwise_recall": 0.0,
+        "pairwise_f1": 0.0,
+        "fowlkes_mallows": 0.0,
+        "nmi": 0.8135259694423123,
+        "homogeneity": 1.0000000000000002,
+        "completeness": 0.6856668991397343,
+        "v_measure": 0.8135259694423123,
+        "mutual_information_nats": 1.809514255849282
+      },
+      "per_service": [
+        {
+          "truth_service": "Catalog",
+          "matched_prediction": "discovery",
+          "tp": 1,
+          "predicted_size": 1,
+          "truth_size": 2,
+          "precision": 1.0,
+          "recall": 0.5,
+          "f1": 0.6666666666666666
+        },
+        {
+          "truth_service": "Inventory",
+          "matched_prediction": "inventory",
+          "tp": 1,
+          "predicted_size": 1,
+          "truth_size": 1,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        {
+          "truth_service": "Notifications",
+          "matched_prediction": "notifications",
+          "tp": 1,
+          "predicted_size": 1,
+          "truth_size": 1,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        {
+          "truth_service": "Orders",
+          "matched_prediction": "basket",
+          "tp": 1,
+          "predicted_size": 1,
+          "truth_size": 3,
+          "precision": 1.0,
+          "recall": 0.3333333333333333,
+          "f1": 0.5
+        },
+        {
+          "truth_service": "Payments",
+          "matched_prediction": "payments",
+          "tp": 1,
+          "predicted_size": 1,
+          "truth_size": 1,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        {
+          "truth_service": "Platform",
+          "matched_prediction": "app",
+          "tp": 1,
+          "predicted_size": 1,
+          "truth_size": 4,
+          "precision": 1.0,
+          "recall": 0.25,
+          "f1": 0.4
+        },
+        {
+          "truth_service": "Users/Auth",
+          "matched_prediction": "auth",
+          "tp": 1,
+          "predicted_size": 1,
+          "truth_size": 2,
+          "precision": 1.0,
+          "recall": 0.5,
+          "f1": 0.6666666666666666
+        }
+      ],
+      "labelled_summary": {
+        "macro_precision": 1.0,
+        "macro_recall": 0.6547619047619048,
+        "macro_f1": 0.7476190476190476,
+        "weighted_f1": 0.6261904761904761,
+        "mapping_truth_to_pred": {
+          "Catalog": "discovery",
+          "Inventory": "inventory",
+          "Notifications": "notifications",
+          "Orders": "basket",
+          "Payments": "payments",
+          "Platform": "app",
+          "Users/Auth": "auth"
+        }
+      },
+      "structure": {
+        "modularity": -0.10330578512396695,
+        "total_internal_weight": 0.0,
+        "total_external_weight": 165.0,
+        "cut_ratio": 1.0,
+        "avg_cohesion": 0.0,
+        "avg_instability": 0.5894785087408039,
+        "per_service": [
+          {
+            "service": "app",
+            "modules": 1,
+            "internal_weight": 0.0,
+            "afferent_ca": 0.0,
+            "efferent_ce": 25.0,
+            "instability": 1.0,
+            "cohesion_ratio": 0.0
+          },
+          {
+            "service": "auth",
+            "modules": 1,
+            "internal_weight": 0.0,
+            "afferent_ca": 2.0,
+            "efferent_ce": 6.0,
+            "instability": 0.75,
+            "cohesion_ratio": 0.0
+          },
+          {
+            "service": "basket",
+            "modules": 1,
+            "internal_weight": 0.0,
+            "afferent_ca": 4.0,
+            "efferent_ce": 18.0,
+            "instability": 0.8181818181818182,
+            "cohesion_ratio": 0.0
+          },
+          {
+            "service": "config",
+            "modules": 1,
+            "internal_weight": 0.0,
+            "afferent_ca": 13.0,
+            "efferent_ce": 0.0,
+            "instability": 0.0,
+            "cohesion_ratio": 0.0
+          },
+          {
+            "service": "db",
+            "modules": 1,
+            "internal_weight": 0.0,
+            "afferent_ca": 45.0,
+            "efferent_ce": 16.0,
+            "instability": 0.26229508196721313,
+            "cohesion_ratio": 0.0
+          },
+          {
+            "service": "discovery",
+            "modules": 1,
+            "internal_weight": 0.0,
+            "afferent_ca": 4.0,
+            "efferent_ce": 10.0,
+            "instability": 0.7142857142857143,
+            "cohesion_ratio": 0.0
+          },
+          {
+            "service": "inventory",
+            "modules": 1,
+            "internal_weight": 0.0,
+            "afferent_ca": 9.0,
+            "efferent_ce": 6.0,
+            "instability": 0.4,
+            "cohesion_ratio": 0.0
+          },
+          {
+            "service": "logistics",
+            "modules": 1,
+            "internal_weight": 0.0,
+            "afferent_ca": 2.0,
+            "efferent_ce": 7.0,
+            "instability": 0.7777777777777778,
+            "cohesion_ratio": 0.0
+          },
+          {
+            "service": "models",
+            "modules": 1,
+            "internal_weight": 0.0,
+            "afferent_ca": 58.0,
+            "efferent_ce": 0.0,
+            "instability": 0.0,
+            "cohesion_ratio": 0.0
+          },
+          {
+            "service": "notifications",
+            "modules": 1,
+            "internal_weight": 0.0,
+            "afferent_ca": 8.0,
+            "efferent_ce": 13.0,
+            "instability": 0.6190476190476191,
+            "cohesion_ratio": 0.0
+          },
+          {
+            "service": "orders",
+            "modules": 1,
+            "internal_weight": 0.0,
+            "afferent_ca": 2.0,
+            "efferent_ce": 28.0,
+            "instability": 0.9333333333333333,
+            "cohesion_ratio": 0.0
+          },
+          {
+            "service": "payments",
+            "modules": 1,
+            "internal_weight": 0.0,
+            "afferent_ca": 4.0,
+            "efferent_ce": 14.0,
+            "instability": 0.7777777777777778,
+            "cohesion_ratio": 0.0
+          },
+          {
+            "service": "rating",
+            "modules": 1,
+            "internal_weight": 0.0,
+            "afferent_ca": 8.0,
+            "efferent_ce": 8.0,
+            "instability": 0.5,
+            "cohesion_ratio": 0.0
+          },
+          {
+            "service": "users",
+            "modules": 1,
+            "internal_weight": 0.0,
+            "afferent_ca": 6.0,
+            "efferent_ce": 14.0,
+            "instability": 0.7,
+            "cohesion_ratio": 0.0
+          }
+        ]
+      },
+      "extras": {}
+    }
+  }
+}
