@@ -16,9 +16,8 @@ venv/
 # OS
 .DS_Store
 
-# Generated pipeline artifacts are intentionally tracked (portfolio value),
-# except transient traces/caches:
+# Pipeline artifacts under generated/ are tracked on purpose so the repo can be
+# read without running anything. The LLM call trace is transient.
 generated/llm_trace.jsonl
 
-# Portfolio tracking (local only — never publish)
-Portfolio_Tracking/
+.code-review-graph/
