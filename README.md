@@ -1,45 +1,38 @@
-# mono2micro — AI-Driven Monolith → Microservice Migration Assistant
+# mono2micro
 
-A runnable, multi-agent system that migrates a monolith to microservices with a
-**human-in-the-loop** review gate. It statically analyses a codebase, proposes
-service boundaries by **combining graph community detection with LLM domain
-reasoning**, **quantitatively scores** the proposal against a ground-truth
-partition, gates the result behind a Streamlit review, and then generates a
-runnable **strangler-fig** topology (extracted FastAPI service + gateway +
-contract tests + Docker).
+A migration assistant that proposes microservice boundaries for a monolith,
+scores the proposal against a ground-truth partition, gates it behind human
+review, and generates a runnable strangler-fig topology from the approved
+result.
 
-Everything runs **offline** with a deterministic **mock LLM** (no API key) and
-identically with a real Anthropic key. There is **no LangChain / LlamaIndex /
-CrewAI / AutoGen** — a small custom orchestrator keeps every step inspectable.
+It runs offline against a deterministic mock LLM, and identically against a real
+Anthropic key. There is no agent framework — a small orchestrator coordinates
+six single-purpose agents, and every step writes an inspectable artifact to
+disk.
 
-> Built as a Data-Science / ML portfolio project: the emphasis is on
-> **algorithmic depth** (from-scratch clustering-evaluation harness) and
-> **quantitative rigour** (a calibrated metric battery), not just a working demo.
-
----
-
-## TL;DR — run it
+## Running it
 
 ```bash
-make install          # create .venv and install deps  (once)
-make all              # Phase 1→3 end-to-end, non-interactive, mock LLM
-make test             # 65 tests: tooling + generated contracts + strangler proof
-make demo             # live strangler routing (Docker if present, else in-process)
+make install          # create .venv and install deps (once)
+make all              # analysis through codegen, non-interactive, mock LLM
+make test             # 65 tests, fully offline
+make demo             # strangler routing (Docker if present, else in-process)
+```
 
-# interactive human-in-the-loop review instead of `make approve`:
+For the interactive review instead of `make approve`:
+
+```bash
 make analyze decompose
-make review           # Streamlit app -> reassign/rename/APPROVE
+make review           # Streamlit: reassign, rename, approve
 make generate demo
 ```
 
-No credentials are needed. For the **real** LLM path:
+No credentials are needed. For the real LLM path:
 
 ```bash
 export LLM_MODE=real ANTHROPIC_API_KEY=sk-... ANTHROPIC_MODEL=claude-sonnet-5
-make decompose        # the model name is read from env — never hardcoded
+make decompose
 ```
-
----
 
 ## Architecture
 
@@ -47,10 +40,10 @@ make decompose        # the model name is read from env — never hardcoded
 flowchart TB
     subgraph Input
         M[monolith/<br/>Flask e-commerce app]
-        GT[eval/ground_truth.json<br/>gold-standard labels]
+        GT[eval/ground_truth.json<br/>reference labels]
     end
 
-    subgraph Orchestrator["agents/orchestrator.py — custom, framework-free"]
+    subgraph Orchestrator["agents/orchestrator.py"]
         direction TB
         RA[repo_analyzer<br/>AST static analysis]
         DE[decomposition<br/>graph clustering + LLM refine]
@@ -70,14 +63,14 @@ flowchart TB
     DE -. refine/name .-> LLM
     MT --> HITL
     DE --> HITL
-    HITL -- APPROVED --> CG
+    HITL -- approved --> CG
     CA --> CG --> RT --> CT
     GT --> MT
 
     CT --> OUT[generated/<br/>services · gateway · tests · contracts]
 ```
 
-**Pipeline (every arrow is an inspectable JSON/YAML/MD artifact on disk):**
+Every arrow is a JSON, YAML or Markdown artifact on disk:
 
 ```mermaid
 sequenceDiagram
@@ -87,280 +80,270 @@ sequenceDiagram
     participant RA as repo_analyzer
     participant DE as decomposition
     participant MT as metrics
-    participant UI as Streamlit HITL
-    participant CG as codegen (Phase 3)
+    participant UI as Streamlit review
+    participant CG as codegen
 
     Dev->>O: make analyze
     O->>RA: parse monolith (ast)
     RA-->>O: context_packs.json + dep_graph.json
     Dev->>O: make decompose
     O->>DE: cluster (IDF + hub-aware) + LLM refine
-    DE-->>O: decomposition.json (algorithmic AND refined)
+    DE-->>O: decomposition.json (algorithmic and refined)
     O->>MT: score vs ground truth
-    MT-->>O: metrics.json + report.md (ARI, F1, cohesion/coupling)
+    MT-->>O: metrics.json + report.md
     Dev->>UI: make review
     UI->>UI: reassign / rename / inspect graph + metrics
-    UI-->>O: approved_decomposition.json  ✅ gate opens
+    UI-->>O: approved_decomposition.json opens the gate
     Dev->>O: make generate
     O->>CG: emit service + gateway + contract tests
-    CG-->>Dev: generated/ (runnable strangler topology)
+    CG-->>Dev: generated/ topology
 ```
 
-### Decomposition: two signals, kept separate
+## The sample monolith
+
+A Flask e-commerce app of 14 modules across 6 bounded contexts plus a shared
+kernel, with cross-cutting imports that make decomposition non-trivial.
+
+| Context | Modules |
+|---|---|
+| Platform (shared kernel) | `app`, `config`, `db`, `models` |
+| Users/Auth | `auth`, `users` |
+| Catalog | `discovery`, `rating` |
+| Inventory | `inventory` |
+| Orders | `orders`, `basket`, `logistics` |
+| Payments | `payments` |
+| Notifications | `notifications` |
+
+`orders.checkout()` imports Catalog, Inventory, Payments, Users and
+Notifications. That is why pure modularity maximisation merges these contexts,
+and why a semantic signal is needed to separate them again.
+
+Three modules — `discovery`, `rating`, `basket` — are named for their mechanism
+rather than their domain, so classification has to work from behaviour rather
+than filenames. `logistics` sits across two contexts: it belongs to the Orders
+lifecycle but its code is warehouse-stock manipulation. `eval/ground_truth.json`
+holds the reference labels and documents these cases in `realism_notes`.
+
+## Dependency analysis
+
+`agents/repo_analyzer.py` walks the AST of each module and emits a context pack:
+imports (internal and external), functions, classes, Flask routes, and entity
+definitions. `core/graph.py` builds a weighted directed graph from the internal
+imports, applies IDF weighting to damp edges into shared-kernel hubs, and
+identifies the composition root and shared kernel by degree.
+
+## Decomposition and evaluation
 
 ```mermaid
 flowchart LR
     P[context packs] --> G[dependency graph<br/>networkx]
-    G --> IDF[IDF edge weighting<br/>damp shared-kernel hubs]
-    G --> HUB[hub detection<br/>composition root + shared kernel]
-    IDF --> CD[greedy-modularity communities<br/>unsupervised resolution search]
+    G --> IDF[IDF edge weighting]
+    G --> HUB[hub detection]
+    IDF --> CD[greedy-modularity communities<br/>resolution search]
     HUB --> CD
-    CD --> ALGO[[algorithmic clusters<br/>structural signal]]
-    ALGO --> REF[LLM / mock refine<br/>domain-keyword reasoning]
+    CD --> ALGO[[algorithmic clusters]]
+    ALGO --> REF[LLM / mock refine]
     P --> REF
-    REF --> SVC[[named bounded contexts<br/>semantic signal]]
+    REF --> SVC[[named bounded contexts]]
     ALGO -. scored .-> EVAL[metrics harness]
     SVC -. scored .-> EVAL
 ```
 
-The **algorithmic** clusters and the **LLM-refined** services are logged and
-scored separately, so the report shows exactly what each signal contributed
-(see *Evaluation* below — the semantic layer adds **+0.67 ARI** over structure
-alone on the sample monolith).
+The algorithmic clusters and the refined services are stored and scored
+separately, so the report attributes the result to each signal.
 
-### Strangler-fig topology (Phase 3 output)
+`core/metrics.py` implements every metric directly rather than calling sklearn
+or scipy, and the unit tests pin each one to a hand-computed value. It reports
+three families:
 
-```mermaid
-flowchart LR
-    C[client / curl] --> GW[gateway :8080<br/>generated/gateway]
-    GW -->|/orders, /cart| NEW[orders-service :8000<br/>generated FastAPI — NEW]
-    GW -->|everything else| OLD[monolith :8000<br/>Flask — unchanged]
-```
+- Clustering agreement, alignment-free: Adjusted Rand Index, Rand Index,
+  pairwise precision/recall/F1, NMI, homogeneity, completeness, V-measure.
+- Per-service precision/recall/F1, after matching predicted to ground-truth
+  services one-to-one with the Hungarian algorithm.
+- Graph structure: Newman modularity, cohesion, afferent and efferent coupling,
+  instability `I = Ce/(Ca+Ce)`, inter-service cut ratio.
 
-Requests for the **extracted** context (`/orders`, `/cart`) hit the new service;
-everything else falls through to the still-running monolith. The gateway stamps
-`X-Gateway-Backend` / `X-Served-By` so routing is observable.
+### Results
 
----
+Mock mode, reproducible with `make eval`:
 
-## The synthetic monolith (Phase 0)
-
-A small but realistic Flask e-commerce app — **14 modules, 6 bounded contexts +
-a shared kernel** — with deliberately cross-cutting imports so decomposition is
-non-trivial:
-
-| Context | Modules | Notes |
-|---|---|---|
-| Platform (shared kernel) | `app`, `config`, `db`, `models` | composition root + shared entities |
-| Users/Auth | `auth`, `users` | |
-| Catalog | `discovery`, `rating` | **domain-neutral names** (browse / pricing) |
-| Inventory | `inventory` | |
-| Orders | `orders`, `basket`, `logistics` | **extraction target**; `logistics` is deliberately **ambiguous** |
-| Payments | `payments` | |
-| Notifications | `notifications` | |
-
-**Controlled realism (so scores aren't an artifact of tidy filenames):**
-- `discovery` (catalogue browse), `rating` (pricing) and `basket` (cart) use
-  **domain-neutral filenames** — the classifier must infer their context from
-  *behaviour*, and it still gets all three right.
-- `logistics` genuinely **straddles two contexts**: it belongs to the Orders
-  lifecycle (its ground-truth label) but its behaviour is pure warehouse-stock
-  manipulation, so a content classifier reasonably mis-files it under Inventory.
-  This is an honest, defensible error — the gold labels were **not** tweaked to
-  make numbers look good (see `eval/ground_truth.json` → `realism_notes`).
-
-`orders.checkout()` imports Catalog, Inventory, Payments, Users **and**
-Notifications — which is exactly why the dependency graph merges these contexts
-under pure modularity, and why the semantic layer is needed to pull them apart.
-`eval/ground_truth.json` labels each module; that is the gold standard the
-decomposition is scored against.
-
----
-
-## Evaluation (the DS/ML core — `core/metrics.py`)
-
-All metrics are implemented **from first principles** (no sklearn/scipy) so the
-formulas are inspectable, and unit-tested against hand-computed values. The
-harness reports three families:
-
-- **Clustering agreement** (alignment-free): Adjusted Rand Index, Rand Index,
-  pairwise Precision/Recall/F1, NMI, Homogeneity, Completeness, V-measure.
-- **Per-service P/R/F1** after an **optimal one-to-one match** of predicted to
-  ground-truth services via a **from-scratch Hungarian algorithm**.
-- **Graph-structural**: Newman modularity, cohesion, afferent/efferent coupling
-  (Ca/Ce), instability `I = Ce/(Ca+Ce)`, inter-service cut ratio.
-
-### Sample results (mock mode, reproducible via `make eval`)
-
-| Partition | #Services | ARI | NMI | Macro-F1 | Modularity Q | Cut ratio |
+| Partition | Services | ARI | NMI | Macro-F1 | Modularity Q | Cut ratio |
 |---|---|---|---|---|---|---|
-| **refined (proposed)** ⭐ | 7 | **0.839** | 0.936 | 0.924 | −0.097 | 0.818 |
+| refined (proposed) | 7 | 0.839 | 0.936 | 0.924 | −0.097 | 0.818 |
 | algorithmic (graph only) | 4 | 0.169 | 0.582 | 0.403 | −0.041 | 0.709 |
-| louvain (naive) | 2 | −0.050 | 0.208 | 0.121 | 0.107 | 0.315 |
+| louvain | 2 | −0.050 | 0.208 | 0.121 | 0.107 | 0.315 |
 | random (mean of 50) | 6 | 0.021 ± 0.112 | 0.583 | 0.460 | −0.082 | 0.835 |
 | single service | 1 | 0.000 | 0.000 | 0.063 | 0.000 | 0.000 |
 | per module | 14 | 0.000 | 0.814 | 0.748 | −0.103 | 1.000 |
-| ground truth (upper bound) | 7 | 1.000 | 1.000 | 1.000 | −0.121 | 0.836 |
+| ground truth | 7 | 1.000 | 1.000 | 1.000 | −0.121 | 0.836 |
 
-**How to read this — four deliberate lessons:**
+Structural clustering alone reaches ARI 0.169; it under-segments because the
+bounded contexts really are coupled. Semantic refinement lifts that to 0.839, a
+delta of +0.67 on this monolith.
 
-1. **The semantic layer earns its keep.** Structural clustering alone reaches
-   ARI 0.17 (it under-segments coupled contexts); LLM/keyword refinement lifts
-   it to **0.84** — a **+0.67** delta on the sample monolith.
-2. **Strong but honestly imperfect.** ARI 0.84 (Macro-F1 0.92), *not* a perfect
-   1.00: the classifier recovers 13/14 modules — including the three
-   domain-neutral-named ones — and makes exactly **one defensible error**, filing
-   the ambiguous `logistics` module under Inventory instead of Orders. Per-service
-   F1: everything 1.00 except Orders (0.80, recall hit by the missing `logistics`)
-   and Inventory (0.67, precision hit by the extra `logistics`).
-3. **The suite is calibrated.** The **mean of 50 random** partitions is ARI
-   0.02 ± 0.11; naive modularity-maximising clustering (louvain) actively
-   *mis-groups* domains (ARI −0.05). So 0.84 reflects real agreement, not luck.
-4. **ARI, not NMI, is the headline.** NMI is inflated by fine partitions —
-   `per_module` scores NMI 0.81 but ARI 0.00. ARI is chance-corrected and
-   robust to cluster count.
+The refined partition recovers 13 of 14 modules, including all three
+mechanism-named ones. The remaining error is `logistics`, filed under Inventory
+rather than Orders. Per-service F1 is 1.00 everywhere except Orders (0.80,
+recall) and Inventory (0.67, precision). The ground-truth labels were not
+adjusted to raise the score.
 
-**Bonus — modularity is the *wrong* objective here.** The ground-truth partition
-itself has Q = −0.12 on the raw graph (the shared kernel couples everything), so
-a partition that maximises modularity is *worse*, not better. This is the whole
-argument for combining structure with domain semantics.
+Two calibration points make the headline number readable. The mean of 50 random
+partitions is ARI 0.021 ± 0.112, and naive modularity maximisation scores
+−0.050, so 0.839 reflects agreement rather than chance. ARI leads the table
+rather than NMI because NMI rewards fine partitions — `per_module` scores NMI
+0.814 at ARI 0.000.
 
-**Cohesion/coupling confirms the roles** (Martin's stability metrics): `Orders`
-is the most unstable service (an orchestrator that depends on everything) while
-`Platform` is the most stable (a shared kernel depended upon by everything) —
-exactly the seams a migration addresses first.
+Modularity is the wrong objective on this graph. The ground-truth partition
+itself scores Q = −0.121, because the shared kernel couples everything, so a
+partition optimising Q is further from the answer, not closer. The
+cohesion/coupling figures agree with the roles: Orders is the least stable
+service, depending on almost everything, and Platform the most stable, depended
+upon by almost everything.
 
-> **Why the score is 0.84 and not 1.00 (by design):** three modules use
-> domain-neutral filenames and one (`logistics`) genuinely straddles Orders and
-> Inventory, so the keyword classifier can't ride on tidy names and makes one
-> honest boundary error. The gold labels were never adjusted to inflate the
-> number. On a messy real codebase — or with the mock swapped for a real LLM over
-> more ambiguous modules — expect scores in this same "strong but imperfect"
-> band, which is exactly the point.
+## Human-in-the-loop review
 
----
+`streamlit run review_ui/app.py` shows the headline metrics, the dependency
+graph coloured by proposed service with cross-service edges dashed, per-module
+reassignment controls, and rename/new-service controls. Approving writes
+`eval/approved_decomposition.json`.
 
-## Human-in-the-loop review (`make review`)
+`make generate` refuses to run until that file exists and is approved.
+`make approve` is the non-interactive equivalent used by `make all` and writes
+the identical file.
 
-`streamlit run review_ui/app.py` opens the review app:
+## Service extraction
 
-- headline metrics (ARI, Macro-F1, V-measure, cut ratio),
-- the dependency graph **coloured by proposed service** (cross-service edges
-  dashed — the seams), with the extraction target outlined,
-- per-module **reassignment** dropdowns and **new-service / rename** controls,
-- an **APPROVE** button that writes `eval/approved_decomposition.json`.
-
-**Phase 3 is hard-gated**: `make generate` refuses to run until that file exists
-and is approved. `make approve` is the non-interactive equivalent (used by
-`make all` / CI); it writes the identical gate file.
-
----
-
-## What Phase 3 generates
-
-From the approved Orders contract, `codegen_agent` / `routing_agent` /
-`contract_test_agent` emit **real, readable source** (not a runtime spec
-interpreter):
+From the approved Orders contract, three agents emit source rather than
+interpreting a spec at runtime:
 
 ```
 generated/
-  contracts/Orders.yaml            OpenAPI 3.1 (typed schemas from entity annotations)
+  contracts/Orders.yaml            OpenAPI 3.1, typed schemas from entity annotations
   services/orders/{main,models}.py FastAPI skeleton: pydantic models (topo-sorted),
                                    stub handlers, /health, X-Served-By header
   gateway/{routing,main}.py        strangler gateway + routes.yaml route table
-  tests/test_orders_contract.py    pytest: status + JSON-Schema conformance vs contract
+  tests/test_orders_contract.py    pytest: status + JSON-Schema conformance
 ```
 
-`docker/` contains `Dockerfile.{monolith,service,gateway}` + `docker-compose.yml`
-(+ a `.dockerignore` so builds don't ship `.venv`/`.git`). With Docker installed:
+```mermaid
+flowchart LR
+    C[client] --> GW[gateway :8080<br/>generated/gateway]
+    GW -->|/orders, /cart| NEW[orders-service :8000<br/>generated FastAPI]
+    GW -->|everything else| OLD[monolith :8000<br/>Flask, unchanged]
+```
+
+Requests for the extracted context reach the new service; everything else falls
+through to the monolith. The gateway sets `X-Gateway-Backend` and `X-Served-By`
+so routing is observable.
+
+`docker/` holds `Dockerfile.{monolith,service,gateway}`, `docker-compose.yml`
+and a `.dockerignore`. With Docker available:
 
 ```bash
 make generate
 docker compose -f docker/docker-compose.yml up --build
-curl -i localhost:8080/orders/1          # X-Gateway-Backend: orders-service  (NEW)
-curl -i localhost:8080/catalog/products  # X-Gateway-Backend: monolith        (OLD)
+curl -i localhost:8080/orders/1          # X-Gateway-Backend: orders-service
+curl -i localhost:8080/catalog/products  # X-Gateway-Backend: monolith
 docker compose -f docker/docker-compose.yml down
 ```
 
-**Verifying the runtime without Docker.** This project was built on a host with
-no Docker daemon, so `make verify-runtime` (`scripts/verify_runtime.sh`) launches
-the **exact commands the Dockerfiles run** (`python -m monolith.app`,
-`uvicorn main:app`) as real localhost processes and drives the gateway's **real
-async-httpx forwarding path** — the same code that runs in the containers, minus
-containerisation. It confirms all three tiers become healthy and that
-`/orders/*` → new service while other routes → monolith. `make demo` prefers this
-real-HTTP check and only falls back to the in-process
-`tests/test_strangler_integration.py` path if it can't bind localhost ports.
+`make verify-runtime` covers the same ground without a Docker daemon. It runs
+the exact commands the Dockerfiles use (`python -m monolith.app`,
+`uvicorn main:app`) as localhost processes and drives the gateway's real
+async-httpx forwarding path, confirming all three tiers come up healthy and that
+`/orders/*` routes to the new service while other paths route to the monolith.
+`make demo` prefers this check and falls back to the in-process
+`tests/test_strangler_integration.py` path if it cannot bind ports.
 
----
-
-## Project layout
+## Layout
 
 ```
 mono2micro/
-  monolith/            synthetic Flask monolith (Phase 0)
-  agents/              orchestrator + 7 inspectable agents + llm_client
-  core/                context_pack (pydantic) · graph · metrics harness
-  review_ui/           Streamlit HITL app + unit-tested review_logic
-  generated/           OUTPUT: services/ gateway/ contracts/ tests/ + artifacts
-  eval/                ground_truth.json · metrics.json · report.md · approved_*.json
+  monolith/            sample Flask monolith
+  agents/              orchestrator, six agents, llm_client
+  core/                context_pack (pydantic) · graph · metrics
+  review_ui/           Streamlit review app + review_logic
+  generated/           output: services, gateway, contracts, tests, artifacts
+  eval/                ground_truth.json · metrics.json · report.md
   docker/              Dockerfiles + docker-compose.yml
-  tests/               tooling + strangler integration tests (pytest)
-  scripts/             demo.sh (docker-or-local) · local_demo.py
-  Makefile · PLAN.md · README.md · requirements.txt
+  tests/               tooling and strangler integration tests
+  scripts/             demo.sh · local_demo.py · verify_runtime.sh
 ```
-
----
 
 ## Configuration
 
-| Env var | Default | Meaning |
+| Variable | Default | Meaning |
 |---|---|---|
 | `LLM_MODE` | `mock` | `mock` (offline, deterministic) or `real` (Anthropic) |
-| `ANTHROPIC_MODEL` | `claude-sonnet-5` | model id — **read from env, never hardcoded** |
+| `ANTHROPIC_MODEL` | `claude-sonnet-5` | model id, read from env |
 | `ANTHROPIC_API_KEY` | — | required only for `real` mode |
-| `MONOLITH_URL` / `ORDERS_URL` | docker DNS | gateway backend URLs at runtime |
+| `MONOLITH_URL` / `ORDERS_URL` | docker DNS | gateway backend URLs |
 
 See `.env.example`.
 
----
+## Design decisions
 
-## Limitations & future work
+A few choices worth explaining, since they shape the results.
 
-**Limitations**
-- The sample monolith is synthetic and cleanly factored; the mock refiner is a
-  keyword lexicon, so mock-mode scores are optimistic (see the note above). Real
-  codebases have ambiguous, poorly-named modules where scores land lower.
-- Static analysis is import/AST based: it does not resolve dynamic dispatch,
-  runtime DI, reflection, or cross-service calls made via strings/config.
-- Generated handlers are **stubs** returning schema-valid examples — they encode
-  the contract's shape, not business logic or persistence.
-- Data ownership / shared-database decoupling (the hardest part of a real
-  migration) is out of scope; the shared kernel is surfaced but not split.
+**No agent framework.** The orchestrator is around 220 lines and each command is
+an explicit method that reads and writes JSON. LangChain or CrewAI would add a
+control flow I would then have to explain; here every intermediate state is a
+file you can open.
 
-**Future work**
-- Replace the keyword mock with a real LLM refinement loop and report the
-  ARI/F1 distribution across several messy open-source monoliths.
-- Add **call-graph** and **data-flow** edges (not just imports) and co-change
-  signal mined from git history to weight the dependency graph.
-- Learn the clustering resolution / hub thresholds instead of grid + heuristics.
-- Generate a **data-decomposition** plan (per-service tables, anti-corruption
+**Two signals, kept separate.** Structural clustering and semantic refinement
+are stored and scored independently. Reporting only the combined number would
+hide which part is doing the work — and on this monolith, structure alone is
+worth ARI 0.169.
+
+**Metrics implemented directly.** sklearn would be one import, but the metrics
+are the substance of the evaluation, so they are written out and pinned to
+hand-computed values in the tests. The Hungarian matching for per-service F1 is
+the same story.
+
+**Mock LLM by default.** The mock is a keyword lexicon over the context packs,
+deterministic and offline. It makes the pipeline reproducible and testable
+without credentials, at the cost of being weaker than a real model on ambiguous
+modules.
+
+**Generated code, not runtime interpretation.** The codegen agents emit readable
+FastAPI source rather than serving from the OpenAPI document, because the output
+of a migration tool should be code a team can own and edit.
+
+## Limitations
+
+- The sample monolith is synthetic and cleanly factored, and the mock refiner is
+  a keyword lexicon, so mock-mode scores are optimistic. Real codebases have
+  ambiguous and poorly-named modules where scores land lower.
+- Static analysis is import- and AST-based. It does not resolve dynamic
+  dispatch, runtime dependency injection, reflection, or calls made through
+  strings and configuration.
+- Generated handlers are stubs returning schema-valid examples. They encode the
+  shape of the contract, not business logic or persistence.
+- Data ownership and shared-database decoupling, the hardest part of a real
+  migration, are out of scope. The shared kernel is identified but not split.
+
+## Future work
+
+- Replace the keyword mock with a real LLM refinement loop and report the ARI/F1
+  distribution across several open-source monoliths.
+- Add call-graph and data-flow edges rather than imports alone, and weight the
+  graph with co-change signal mined from git history.
+- Learn the clustering resolution and hub thresholds instead of searching a grid
+  against heuristics.
+- Generate a data-decomposition plan (per-service tables, anti-corruption
   layers) and saga/outbox scaffolding for cross-service transactions.
-- Contract tests that diff the extracted service against **recorded monolith
-  traffic** (consumer-driven contracts), not just the static schema.
-- CI that runs the full pipeline and fails a PR if a refactor drops ARI/F1.
+- Diff the extracted service against recorded monolith traffic rather than the
+  static schema alone.
+- CI that runs the pipeline and fails a PR when a refactor drops ARI or F1.
 
----
-
-## Testing
+## Tests
 
 ```bash
-make test        # 65 tests, ~1s, fully offline
+make test        # 65 tests, ~1s, offline
 ```
 
-Covers: AST analysis, graph/hub/IDF behaviour, the full metric suite (ARI/NMI/
-Hungarian/labelled P/R/F1 pinned to hand-computed values), decomposition quality
-and determinism, OpenAPI generation + validation, LLM-client mock determinism and
-real-mode guardrails, the monolith's cross-context checkout, the HITL review
-logic + approval gate, the **generated contract tests**, and the **offline
-strangler integration** (Orders → new service, everything else → monolith).
+Covering AST analysis, graph and hub behaviour, the metric suite pinned to
+hand-computed values, decomposition quality and determinism, OpenAPI generation
+and validation, LLM-client mock determinism and real-mode guardrails, the
+monolith's cross-context checkout, the review logic and approval gate, the
+generated contract tests, and the offline strangler integration.
