@@ -1,7 +1,4 @@
-"""Effective-price computation: discounts, tax and quotes for products.
-
-(Domain-neutral module name on purpose — see discovery.py.)
-"""
+"""Effective-price computation: discounts, tax and quotes for products."""
 from __future__ import annotations
 
 from flask import Blueprint, jsonify

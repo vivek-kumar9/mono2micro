@@ -37,7 +37,7 @@ wait_up() {
 wait_up http://127.0.0.1:8000/health          || { echo "MONOLITH failed to start"; tail /tmp/m2m_monolith.log; exit 1; }
 wait_up http://127.0.0.1:8001/health          || { echo "ORDERS failed to start";   tail /tmp/m2m_orders.log;   exit 1; }
 wait_up http://127.0.0.1:8080/__gateway/health || { echo "GATEWAY failed to start";  tail /tmp/m2m_gateway.log;  exit 1; }
-echo "    all three tiers healthy ✅"
+echo "    all three tiers healthy"
 
 hdr() { curl -s -D - -o /dev/null "$1"; }
 line() { printf '%s\n' "--------------------------------------------------------------"; }
@@ -46,7 +46,7 @@ echo ""; line
 echo "  gateway health:"
 curl -s http://127.0.0.1:8080/__gateway/health | "$PY" -m json.tool
 line
-echo "  GET /orders/1        (expect backend=orders-service, the NEW service)"
+echo "  GET /orders/1        (expect backend=orders-service)"
 hdr http://127.0.0.1:8080/orders/1        | grep -iE "^HTTP|x-gateway-backend|x-served-by"
 line
 echo "  GET /catalog/products (expect backend=monolith, unextracted)"
@@ -58,4 +58,4 @@ echo "  GET /users/1          (expect backend=monolith)"
 hdr http://127.0.0.1:8080/users/1          | grep -iE "^HTTP|x-gateway-backend"
 line
 echo ""
-echo "RESULT: Orders route -> NEW orders-service; other routes -> monolith. Strangler verified over real HTTP. ✅"
+echo "RESULT: Orders route -> orders-service; other routes -> monolith. Strangler verified over real HTTP."

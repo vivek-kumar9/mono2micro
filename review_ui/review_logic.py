@@ -2,7 +2,7 @@
 
 The Streamlit app is a thin shell over these functions: it loads the proposed
 decomposition, lets a human reassign modules / rename services, and on approval
-persists an ``ApprovedDecomposition`` — the file that gates Phase 3.
+persists an ``ApprovedDecomposition`` — the file that gates code generation.
 """
 from __future__ import annotations
 

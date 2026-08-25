@@ -1,8 +1,4 @@
-"""Product discovery: browse the catalogue with live stock and effective price.
-
-(Domain-neutral module name on purpose: the decomposition must infer this
-module's context from its behaviour, not from a give-away filename.)
-"""
+"""Product discovery: browse the catalogue with live stock and effective price."""
 from __future__ import annotations
 
 from flask import Blueprint, jsonify

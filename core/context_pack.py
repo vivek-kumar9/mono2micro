@@ -11,7 +11,7 @@ from typing import Literal
 from pydantic import BaseModel, Field
 
 # --------------------------------------------------------------------------- #
-# Phase 1 — static analysis
+# Static analysis
 # --------------------------------------------------------------------------- #
 
 
@@ -101,7 +101,7 @@ class GraphArtifact(BaseModel):
 
 
 class RepoAnalysis(BaseModel):
-    """Top-level Phase-1 artifact: the context packs + the dependency graph."""
+    """Result of static analysis: the context packs plus the dependency graph."""
 
     root: str
     packs: list[ContextPack]
@@ -114,7 +114,7 @@ class RepoAnalysis(BaseModel):
 
 
 # --------------------------------------------------------------------------- #
-# Phase 2 — decomposition
+# Decomposition
 # --------------------------------------------------------------------------- #
 
 
@@ -129,7 +129,7 @@ class ServiceProposal(BaseModel):
 
 
 class Decomposition(BaseModel):
-    """Phase-2 artifact. Keeps the *algorithmic* clusters and the
+    """Result of decomposition. Keeps the *algorithmic* clusters and the
     *LLM-refined* services separate so both signals stay inspectable."""
 
     algorithmic_clusters: list[list[str]]
@@ -149,7 +149,7 @@ class Decomposition(BaseModel):
 
 
 class ApprovedDecomposition(BaseModel):
-    """What the human approves in the HITL UI; the Phase-3 gate."""
+    """What the reviewer approves; gates code generation."""
 
     approved: bool = False
     approved_by: str = ""

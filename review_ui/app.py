@@ -5,7 +5,7 @@ Run with:  streamlit run review_ui/app.py   (or `make review`)
 Shows the proposed service boundaries, the dependency graph coloured by service,
 and the evaluation metrics. The reviewer can reassign modules, rename services,
 pick the extraction target, and APPROVE — which writes
-``eval/approved_decomposition.json`` and unlocks Phase 3.
+``eval/approved_decomposition.json``, which unlocks code generation.
 """
 from __future__ import annotations
 
@@ -96,10 +96,10 @@ def main() -> None:
         st.write(f"- **{svc.name}** [{svc.kind}] — `{', '.join(svc.modules)}`")
 
     # --- approval gate ---
-    st.subheader("Approval gate (Phase 3 is blocked until you approve)")
+    st.subheader("Approval gate (code generation is blocked until you approve)")
     approver = st.text_input("Your name / handle", "reviewer")
     notes = st.text_area("Notes (optional)", "")
-    if st.button("✅ APPROVE this decomposition", type="primary"):
+    if st.button("Approve this decomposition", type="primary"):
         approved = rl.build_approved(services, target, approver, notes)
         rl.save_approved(approved, EVAL / "approved_decomposition.json")
         st.success(

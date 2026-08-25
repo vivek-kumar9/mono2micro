@@ -54,7 +54,7 @@ The same metrics are computed for reference partitions. A good suite must rank a
 
 | Partition | #Services | ARI | NMI | Macro-F1 | Modularity Q | Cut ratio |
 |---|---|---|---|---|---|---|
-| `refined` ⭐ | 7 | 0.839 | 0.936 | 0.924 | -0.097 | 0.818 |
+| `refined` (proposed) | 7 | 0.839 | 0.936 | 0.924 | -0.097 | 0.818 |
 | `algorithmic` | 4 | 0.169 | 0.582 | 0.403 | -0.041 | 0.709 |
 | `louvain` | 2 | -0.050 | 0.208 | 0.121 | 0.107 | 0.315 |
 | `greedy_raw` | 2 | -0.050 | 0.208 | 0.121 | 0.107 | 0.315 |
@@ -65,9 +65,9 @@ The same metrics are computed for reference partitions. A good suite must rank a
 
 ## 5. Interpretation
 
-- **Structural clustering alone** reaches ARI 0.17: unsupervised modularity maximisation under-segments because bounded contexts in the monolith are genuinely coupled (checkout imports discovery, inventory, payments, users and notifications).
-- **Adding the semantic (LLM/mock) refinement** lifts ARI to 0.84 (Δ = +0.67): domain reasoning splits the coupled clusters back into their bounded contexts and consolidates the shared kernel into Platform. It is strong but **not perfect** — the deliberately ambiguous `logistics` module (Orders by ground truth, but pure warehouse-stock behaviour) is filed under Inventory, a defensible boundary error.
-- The metric suite is **calibrated**: over 50 random partitions the mean ARI is 0.02 ± 0.11 while the true structure scores 1.00, so the headline number reflects real agreement, not metric inflation.
-- **Why ARI leads, not NMI**: NMI is biased upward by fine partitions — the `per_module` baseline scores NMI 0.81 but ARI 0.00. ARI is chance-corrected and robust to the number of clusters, so it is the primary agreement metric here.
-- **Modularity is the wrong objective for this problem**: the ground-truth partition itself scores Q = -0.12 on the raw graph, because the shared kernel and cross-context orchestration couple every domain. A partition that *maximised* modularity (see `louvain`/`greedy_raw`) actively mis-groups domains — which is precisely why structural clustering must be combined with domain semantics rather than trusted alone.
-- **Cohesion/coupling**: the proposed cut leaves 82% of dependency weight crossing service boundaries. Instability I confirms the roles: Orders is the most unstable service (an orchestrator that depends on everything) while Platform is the most stable (a shared kernel depended upon by everything) — exactly the seams a strangler-fig migration addresses first.
+- Structural clustering alone reaches ARI 0.17. Modularity maximisation under-segments here because the bounded contexts are coupled: checkout imports discovery, inventory, payments, users and notifications.
+- Semantic refinement lifts ARI to 0.84 (Δ = +0.67), splitting the coupled clusters into bounded contexts and consolidating the shared kernel into Platform. `logistics` is assigned to Inventory rather than Orders.
+- Calibration: over 50 random partitions the mean ARI is 0.02 ± 0.11, against 1.00 for the reference partition.
+- ARI is the headline rather than NMI: NMI is biased upward by fine partitions. The `per_module` baseline scores NMI 0.81 at ARI 0.00. ARI is chance-corrected and robust to cluster count.
+- Modularity is not a useful objective on this graph: the reference partition scores Q = -0.12, because the shared kernel couples every domain. Partitions that maximise Q (`louvain`, `greedy_raw`) score lower on agreement, not higher.
+- Cohesion and coupling: the proposed cut leaves 82% of dependency weight crossing service boundaries. Instability I ranks Orders least stable (it depends on most other modules) and Platform most stable (most modules depend on it).

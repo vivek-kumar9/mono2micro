@@ -2,7 +2,7 @@
 
 Endpoints come from the Flask routes owned by the service's modules; schemas
 are reconstructed from the monolith's dataclass entities (typed from their real
-annotations). The Orders spec in particular is the source of truth for Phase 3:
+annotations). The Orders spec is the source of truth for code generation:
 ``codegen_agent`` builds the FastAPI service from it and ``contract_test_agent``
 validates the live service against it.
 """

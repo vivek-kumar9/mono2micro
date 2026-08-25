@@ -1,17 +1,16 @@
-"""Custom multi-agent orchestrator + human-in-the-loop gate.
+"""Migration orchestrator and human-in-the-loop gate.
 
-A deliberately small, framework-free coordinator: each phase is an explicit
-method that reads/writes inspectable JSON artifacts, so the whole migration is
-reproducible and auditable. Run ``python -m agents.orchestrator --help``.
+Each command is a method that reads and writes JSON artifacts, so any step can
+be inspected or re-run on its own. ``python -m agents.orchestrator --help``.
 
-Phases / commands:
-    analyze    Phase 1  static analysis -> context packs + dependency graph
-    decompose  Phase 2  clustering + LLM refine + full evaluation harness
-    contracts  Phase 2  OpenAPI 3.1 spec per proposed service
-    review     Phase 2  print the HITL review payload (Streamlit is the UI)
-    approve    Phase 2  non-interactive approval gate (mirrors the Streamlit write)
-    generate   Phase 3  codegen service skeleton + strangler gateway + tests
-    all        run analyze -> decompose -> contracts end to end
+Commands:
+    analyze    static analysis -> context packs + dependency graph
+    decompose  clustering + LLM refine + evaluation harness
+    contracts  OpenAPI 3.1 spec per proposed service
+    review     print the review payload (Streamlit is the UI)
+    approve    non-interactive approval gate (mirrors the Streamlit write)
+    generate   codegen service skeleton + strangler gateway + tests
+    all        analyze -> decompose -> contracts
 """
 from __future__ import annotations
 
@@ -63,7 +62,7 @@ class Orchestrator:
         self.llm = LLMClient(cfg)
 
     # ------------------------------------------------------------------ #
-    # Phase 1
+    # static analysis
     # ------------------------------------------------------------------ #
     def analyze(self) -> RepoAnalysis:
         analysis = RepoAnalyzer(MONOLITH_DIR, "monolith", self.llm).analyze()
@@ -88,7 +87,7 @@ class Orchestrator:
         return RepoAnalysis.model_validate_json(Paths.analysis.read_text())
 
     # ------------------------------------------------------------------ #
-    # Phase 2
+    # decomposition + evaluation
     # ------------------------------------------------------------------ #
     def decompose(self) -> Decomposition:
         analysis = self.load_analysis()
@@ -169,8 +168,7 @@ class Orchestrator:
         }
 
     def approve(self, approver: str = "cli") -> ApprovedDecomposition:
-        """Non-interactive approval — persists the Phase-3 gate file.
-        (The Streamlit app writes the same file after human edits.)"""
+        """Non-interactive approval; writes the same gate file as the Streamlit app."""
         decomposition = self.load_decomposition()
         gt = json.loads(Paths.ground_truth.read_text())
         approved = ApprovedDecomposition(
@@ -183,7 +181,7 @@ class Orchestrator:
         EVAL.mkdir(parents=True, exist_ok=True)
         Paths.approved.write_text(approved.model_dump_json(indent=2), encoding="utf-8")
         print(f"[approve] extraction_target={approved.extraction_target}")
-        print(f"[approve] wrote {Paths.approved.relative_to(ROOT)} (Phase-3 gate OPEN)")
+        print(f"[approve] wrote {Paths.approved.relative_to(ROOT)} (codegen gate open)")
         return approved
 
 
@@ -216,7 +214,7 @@ def main(argv: list[str] | None = None) -> int:
     elif args.command == "approve":
         orch.approve()
     elif args.command in {"contracts", "generate", "all"}:
-        # wired up once the Phase-2 contract agent / Phase-3 codegen agents land
+        # imported lazily: only these subcommands need the codegen pipeline
         from agents import pipeline
 
         pipeline.dispatch(orch, args.command)

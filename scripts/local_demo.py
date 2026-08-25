@@ -91,12 +91,12 @@ def main() -> int:
             resp = tc.request(method, path, json=body)
             backend = resp.headers.get("X-Gateway-Backend", "?")
             served = resp.headers.get("X-Served-By", "-")
-            tag = "  ← NEW" if backend == "orders-service" else ""
+            tag = "  <- extracted" if backend == "orders-service" else ""
             print(f"  {method + ' ' + path:30s} {backend:16s} {resp.status_code:<6d} {served}{tag}")
 
     print("=" * 68)
-    print("  Orders/Cart traffic is served by the NEW extracted service;")
-    print("  every other route still falls through to the monolith. ✅\n")
+    print("  Orders/Cart traffic is served by the extracted service;")
+    print("  every other route still falls through to the monolith.\n")
     return 0
 
 

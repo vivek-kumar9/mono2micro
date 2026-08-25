@@ -1,8 +1,4 @@
-"""Orders: shopping cart (pre-checkout state).
-
-(Domain-neutral module name on purpose — the word "basket"/"cart" only appears
-in behaviour, not the filename.)
-"""
+"""Orders: shopping cart (pre-checkout state)."""
 from __future__ import annotations
 
 from flask import Blueprint, jsonify, request

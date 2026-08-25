@@ -1,4 +1,4 @@
-"""Phase 3 driver: enforce the HITL gate, then generate the strangler topology.
+"""Code-generation driver: enforce the review gate, then emit the strangler topology.
 
 Consumes the *approved* decomposition (never the raw proposal) and emits, for
 the approved extraction target:

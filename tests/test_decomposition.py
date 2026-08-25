@@ -39,9 +39,12 @@ def test_refinement_beats_algorithmic_baseline(decomposition, analysis, ground_t
 
 
 def test_refinement_is_strong_but_not_a_perfect_oracle(decomposition, analysis, ground_truth):
-    """The sample monolith contains domain-neutral names + one genuinely
-    straddling module, so the honest score is strong but < 1.0 (no filename
-    leakage / no manufactured perfection)."""
+    """Refined ARI should land in [0.75, 1.0): high agreement, but not perfect.
+
+    A score of 1.0 would mean the mechanism-named modules and the
+    context-straddling `logistics` were all resolved, which the keyword refiner
+    does not manage. See eval/ground_truth.json -> realism_notes.
+    """
     dg = build_digraph(analysis.packs)
     refined = evaluate("refined", decomposition.assignment(), ground_truth, dg)
     ari = refined.pair.adjusted_rand_index

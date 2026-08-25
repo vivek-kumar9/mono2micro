@@ -2,7 +2,7 @@
   "description": "Gold-standard bounded-context labelling of the synthetic e-commerce monolith. Each source module is mapped to the microservice/domain it *should* belong to after decomposition. This is the reference partition the proposed decomposition is scored against (ARI, F1, etc.).",
   "domain": "e-commerce order management",
   "extraction_target": "Orders",
-  "realism_notes": "Several modules use domain-neutral filenames (discovery=Catalog browse, rating=pricing, basket=cart) so the decomposition must infer context from behaviour, not filenames. `logistics` deliberately straddles two contexts: it belongs to the Orders lifecycle (its gold label) but manipulates warehouse stock, so a content classifier reasonably mis-files it under Inventory. These are honest sources of imperfect scores; ground-truth labels were NOT adjusted to inflate metrics.",
+  "realism_notes": "discovery (catalogue browse), rating (pricing) and basket (cart) are named for their mechanism rather than their domain, so a decomposition has to classify them from behaviour rather than filename. logistics spans two contexts: it is labelled Orders because it belongs to the order lifecycle, but its code manipulates warehouse stock, so a content-based classifier can reasonably place it under Inventory. Both cases are why mock-mode ARI lands below 1.0. Labels were not adjusted to raise the score.",
   "services": {
     "Platform": {
       "kind": "shared-kernel",

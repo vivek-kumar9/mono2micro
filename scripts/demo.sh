@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Strangler-fig demo. Ensures the pipeline has run through Phase 3 (non-interactive
+# Strangler-fig demo. Ensures the pipeline has run through code generation (non-interactive
 # approval), then brings up the topology with Docker if available, otherwise runs
 # the equivalent in-process demo.
 set -euo pipefail
@@ -7,7 +7,7 @@ cd "$(dirname "$0")/.."
 
 PY="$([ -x .venv/bin/python ] && echo .venv/bin/python || echo python3)"
 
-echo "==> Phase 1-3 (mock LLM, non-interactive approval)"
+echo "==> Full pipeline (mock LLM, non-interactive approval)"
 $PY -m agents.orchestrator analyze
 $PY -m agents.orchestrator decompose
 $PY -m agents.orchestrator approve

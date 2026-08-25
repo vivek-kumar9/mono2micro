@@ -30,7 +30,7 @@ def contracts(orch) -> dict[str, dict]:
 
 
 def generate(orch) -> None:
-    from agents import codegen  # local import: Phase 3 module
+    from agents import codegen  # imported here: only needed for `generate`
 
     codegen.run(orch)
 

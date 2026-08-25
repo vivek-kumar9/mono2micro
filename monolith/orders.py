@@ -2,7 +2,7 @@
 
 Checkout touches Catalog, Inventory, Payments, Users and Notifications —
 which is precisely why Orders is the natural first service to extract with
-the strangler-fig pattern in Phase 3.
+the strangler-fig pattern.
 """
 from __future__ import annotations
 

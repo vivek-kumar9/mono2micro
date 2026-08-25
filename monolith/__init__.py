@@ -3,13 +3,12 @@
 Bounded contexts (see ``eval/ground_truth.json``):
     Platform (shared kernel) : config, db, models, app
     Users/Auth               : auth, users
-    Catalog                  : catalog, pricing
+    Catalog                  : discovery, rating
     Inventory                : inventory
-    Orders                   : orders, cart
+    Orders                   : orders, basket, logistics
     Payments                 : payments
     Notifications            : notifications
 
-The modules deliberately import across contexts (Orders touches nearly
-everything) so that community detection on the dependency graph is a
-non-trivial problem with a meaningful ground-truth partition.
+Modules import across context boundaries — Orders reaches most of them — so
+community detection on the dependency graph is non-trivial.
 """

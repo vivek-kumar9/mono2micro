@@ -1,8 +1,7 @@
 """Evaluation harness for a proposed decomposition.
 
-This is the quantitative heart of the project. Given a predicted partition
-(module -> service) and the ground-truth partition (module -> domain), plus the
-dependency graph, it reports:
+Given a predicted partition (module -> service), the ground-truth partition
+(module -> domain) and the dependency graph, it reports:
 
 Clustering agreement (label-free — needs no cluster/class alignment)
     * Adjusted Rand Index (ARI)
@@ -637,7 +636,7 @@ def render_report_md(
             continue
         r = reports[name]
         d = r.to_dict()["clustering_agreement"]
-        star = " ⭐" if name == primary else ""
+        star = " (proposed)" if name == primary else ""
         lines.append(
             f"| `{name}`{star} | {r.n_predicted_services} | {_fmt(d['adjusted_rand_index'])} | "
             f"{_fmt(d['nmi'])} | {_fmt(r.labelled.macro_f1)} | "
@@ -668,50 +667,43 @@ def _interpretation(
     if algo_ari is not None:
         lift = ari - algo_ari
         parts.append(
-            f"- **Structural clustering alone** reaches ARI {algo_ari:.2f}: unsupervised "
-            "modularity maximisation under-segments because bounded contexts in the "
-            "monolith are genuinely coupled (checkout imports discovery, inventory, "
-            "payments, users and notifications)."
+            f"- Structural clustering alone reaches ARI {algo_ari:.2f}. Modularity "
+            "maximisation under-segments here because the bounded contexts are coupled: "
+            "checkout imports discovery, inventory, payments, users and notifications."
         )
         parts.append(
-            f"- **Adding the semantic (LLM/mock) refinement** lifts ARI to {ari:.2f} "
-            f"(Δ = +{lift:.2f}): domain reasoning splits the coupled clusters back into "
-            "their bounded contexts and consolidates the shared kernel into Platform. "
-            "It is strong but **not perfect** — the deliberately ambiguous `logistics` "
-            "module (Orders by ground truth, but pure warehouse-stock behaviour) is "
-            "filed under Inventory, a defensible boundary error."
+            f"- Semantic refinement lifts ARI to {ari:.2f} (Δ = +{lift:.2f}), splitting the "
+            "coupled clusters into bounded contexts and consolidating the shared kernel "
+            "into Platform. `logistics` is assigned to Inventory rather than Orders."
         )
     perm = reports.get("per_module")
     if random_summary is not None:
         parts.append(
-            f"- The metric suite is **calibrated**: over {random_summary['trials']} random "
-            f"partitions the mean ARI is {random_summary['ari']:.2f} ± "
-            f"{random_summary['ari_std']:.2f} while the true structure scores 1.00, "
-            "so the headline number reflects real agreement, not metric inflation."
+            f"- Calibration: over {random_summary['trials']} random partitions the mean "
+            f"ARI is {random_summary['ari']:.2f} ± {random_summary['ari_std']:.2f}, "
+            "against 1.00 for the reference partition."
         )
     if perm is not None:
         parts.append(
-            "- **Why ARI leads, not NMI**: NMI is biased upward by fine partitions — "
-            f"the `per_module` baseline scores NMI {perm.info.normalized_mutual_information:.2f} "
-            f"but ARI {perm.pair.adjusted_rand_index:.2f}. ARI is chance-corrected and "
-            "robust to the number of clusters, so it is the primary agreement metric here."
+            "- ARI is the headline rather than NMI: NMI is biased upward by fine "
+            f"partitions. The `per_module` baseline scores NMI "
+            f"{perm.info.normalized_mutual_information:.2f} at ARI "
+            f"{perm.pair.adjusted_rand_index:.2f}. ARI is chance-corrected and robust to "
+            "cluster count."
         )
     gtq = reports.get("ground_truth")
     if gtq is not None:
         parts.append(
-            f"- **Modularity is the wrong objective for this problem**: the ground-truth "
-            f"partition itself scores Q = {gtq.structure.modularity:.2f} on the raw graph, "
-            "because the shared kernel and cross-context orchestration couple every domain. "
-            "A partition that *maximised* modularity (see `louvain`/`greedy_raw`) actively "
-            "mis-groups domains — which is precisely why structural clustering must be "
-            "combined with domain semantics rather than trusted alone."
+            f"- Modularity is not a useful objective on this graph: the reference "
+            f"partition scores Q = {gtq.structure.modularity:.2f}, because the shared "
+            "kernel couples every domain. Partitions that maximise Q (`louvain`, "
+            "`greedy_raw`) score lower on agreement, not higher."
         )
     parts.append(
-        f"- **Cohesion/coupling**: the proposed cut leaves {rep.structure.cut_ratio:.0%} "
-        "of dependency weight crossing service boundaries. Instability I confirms the roles: "
-        "Orders is the most unstable service (an orchestrator that depends on everything) "
-        "while Platform is the most stable (a shared kernel depended upon by everything) — "
-        "exactly the seams a strangler-fig migration addresses first."
+        f"- Cohesion and coupling: the proposed cut leaves {rep.structure.cut_ratio:.0%} of "
+        "dependency weight crossing service boundaries. Instability I ranks Orders least "
+        "stable (it depends on most other modules) and Platform most stable (most modules "
+        "depend on it)."
     )
     return "\n".join(parts)
 

@@ -1,4 +1,4 @@
-# mono2micro — AI-driven monolith→microservice migration assistant
+# mono2micro - monolith to microservice migration assistant
 # All targets run offline in mock mode (no API key). For real LLM mode:
 #   export LLM_MODE=real ANTHROPIC_API_KEY=sk-... ANTHROPIC_MODEL=claude-sonnet-5
 
@@ -17,28 +17,28 @@ install: ## Create venv and install dependencies
 	./.venv/bin/python -m pip install -q -r requirements.txt
 	@echo "Installed. Activate with: source .venv/bin/activate"
 
-analyze: ## Phase 1 — static analysis -> context packs + dependency graph
+analyze: ## Static analysis -> context packs + dependency graph
 	$(PYTHON) -m agents.orchestrator analyze
 
-decompose: ## Phase 2 — clustering + LLM refine + full evaluation harness
+decompose: ## Clustering + LLM refine + full evaluation harness
 	$(PYTHON) -m agents.orchestrator decompose
 
-eval: decompose ## Phase 2 — (re)run evaluation and print the report
+eval: decompose ## (Re)run evaluation and print the report
 	@echo "" && cat eval/report.md
 
-contracts: ## Phase 2 — generate + validate OpenAPI 3.1 contracts per service
+contracts: ## Generate + validate OpenAPI 3.1 contracts per service
 	$(PYTHON) -m agents.orchestrator contracts
 
-review: ## Phase 2 — launch the Streamlit HITL review app (interactive gate)
+review: ## Launch the Streamlit HITL review app (interactive gate)
 	$(PYTHON) -m streamlit run review_ui/app.py
 
-approve: ## Phase 2 — non-interactive approval (mirrors the Streamlit gate)
+approve: ## Non-interactive approval (mirrors the Streamlit gate)
 	$(PYTHON) -m agents.orchestrator approve
 
-generate: ## Phase 3 — codegen service + strangler gateway + contract tests (needs approval)
+generate: ## Codegen service + strangler gateway + contract tests (needs approval)
 	$(PYTHON) -m agents.orchestrator generate
 
-demo: ## Phase 3 — run the strangler topology (docker if available, else in-process)
+demo: ## Run the strangler topology (docker if available, else in-process)
 	./scripts/demo.sh
 
 verify-runtime: ## Prove the exact container CMDs work over real HTTP (Docker-free)
@@ -47,9 +47,9 @@ verify-runtime: ## Prove the exact container CMDs work over real HTTP (Docker-fr
 test: ## Run the whole test suite (tooling + generated contract + strangler)
 	$(PYTHON) -m pytest
 
-pipeline: analyze decompose contracts ## Run Phase 1+2 end to end (no approval)
+pipeline: analyze decompose contracts ## Analysis through contracts (no approval)
 
-all: analyze decompose contracts approve generate ## Full non-interactive pipeline through Phase 3
+all: analyze decompose contracts approve generate ## Full non-interactive pipeline including codegen
 
 clean: ## Remove generated artifacts (keeps ground truth + source)
 	rm -rf generated/services generated/gateway generated/tests generated/contracts
